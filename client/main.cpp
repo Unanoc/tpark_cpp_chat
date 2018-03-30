@@ -1,6 +1,7 @@
-#include <iostream>
+#include "messenger-window.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    MessengerWindow mw;
+    mw.render();
     return 0;
 }
