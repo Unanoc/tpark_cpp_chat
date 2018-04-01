@@ -1,7 +1,10 @@
 #include "messenger-window.h"
+#include <QApplication>
 
-int main() {
+int main(int argc, char* argv[]) {
+    QApplication app(argc, argv);
     MessengerWindow mw;
-    mw.render();
-    return 0;
+    mw.show();
+
+    return app.exec();
 }
