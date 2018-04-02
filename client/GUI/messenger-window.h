@@ -1,15 +1,21 @@
-//
-// Created by comp on 3/30/18.
-//
-
 #ifndef CLIENT_MESSENGER_WINDOW_H
 #define CLIENT_MESSENGER_WINDOW_H
 
-#include "messenger-window.h"
+#include <QMainWindow>
 
-class MessengerWindow{
+namespace Ui {
+    class MainWindow;
+}
+
+class MainWindow : public QMainWindow {
+    Q_OBJECT
+
 public:
-    void render();
+    explicit MainWindow(QWidget* parent = 0);
+    ~MainWindow();
+
+private:
+    Ui::MainWindow* ui;
 };
 
 #endif //CLIENT_MESSENGER_WINDOW_H

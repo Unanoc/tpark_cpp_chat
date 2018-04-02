@@ -1,12 +1,11 @@
-//
-// Created by comp on 3/30/18.
-//
-
 #include "messenger-window.h"
+#include "ui_messenger-window.h"
 #include "client.h"
 
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
+    ui->setupUi(this);
+}
 
-void MessengerWindow::render() {
-    Client client;
-    client.Print();
+MainWindow::~MainWindow() {
+    delete ui;
 }
