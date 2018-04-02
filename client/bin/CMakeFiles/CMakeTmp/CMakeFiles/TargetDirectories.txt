@@ -1,3 +1,0 @@
-C:/PROJECTS/Technopark/C/Project/tpark_cpp_chat/client/bin/CMakeFiles/CMakeTmp/CMakeFiles/rebuild_cache.dir
-C:/PROJECTS/Technopark/C/Project/tpark_cpp_chat/client/bin/CMakeFiles/CMakeTmp/CMakeFiles/cmTC_bab09.dir
-C:/PROJECTS/Technopark/C/Project/tpark_cpp_chat/client/bin/CMakeFiles/CMakeTmp/CMakeFiles/edit_cache.dir

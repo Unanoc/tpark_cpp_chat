@@ -70,4 +70,6 @@ Thumbs.db
 # --------
 *.dll
 *.exe
-
+bin/
+build/
+*.user

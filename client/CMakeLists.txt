@@ -3,21 +3,35 @@ cmake_minimum_required(VERSION 3.10)
 project(client)
 
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(TARGET ${CMAKE_PROJECT_NAME})
-set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/exec)
-set(SOURCES main.cpp messenger-window.cpp client.cpp)
 
-find_package(Qt5Widgets REQUIRED)
-qt5_wrap_ui(UI_HEADERS messenger-window.ui)
+set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 if(WIN32)
-    set(CMAKE_WIN32_EXECUTABLE ON)
+    set(CMAKE_PREFIX_PATH "C:\\Qt\\Qt5.10.1\\5.10.1\\msvc2015\\")
+else()
+    set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/qt5/bin")
 endif()
 
-add_executable(${TARGET} ${SOURCES} ${UI_HEADERS})
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Gui REQUIRED)
+find_package(Qt5Widgets REQUIRED)
 
-target_link_libraries(${TARGET} Qt5::Widgets)
+include_directories(${PROJECT_SOURCE_DIR}/HttpClient)
+add_subdirectory(HttpClient)
+
+include_directories(${PROJECT_SOURCE_DIR}/GUI)
+add_subdirectory(GUI)
+
+qt5_wrap_ui(UI_HEADERS GUI/messenger-window.ui)
+
+add_executable(${PROJECT_NAME} main.cpp ${UI_HEADERS})
+
+target_link_libraries(${PROJECT_NAME} HttpClient)
+target_link_libraries(${PROJECT_NAME} GUI)
+target_link_libraries(${PROJECT_NAME} Qt5::Core)
+target_link_libraries(${PROJECT_NAME} Qt5::Gui)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
