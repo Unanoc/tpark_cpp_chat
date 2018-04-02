@@ -1,4 +1,4 @@
-set(SOURCES messenger-window.cpp button.cpp calculator.cpp )
+set(SOURCES messenger-window.cpp)
 
 
 add_library(GUI STATIC ${SOURCES})
