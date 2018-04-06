@@ -21,7 +21,7 @@ find_package(Qt5Quick REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Qml REQUIRED)
 
-qt5_add_resources(qml_QRC GUI/qml.qrc)
+qt5_add_resources(qml_QRC GUI/qml.qrc GUI/images.qrc)
 
 include_directories(${PROJECT_SOURCE_DIR}/HttpClient)
 add_subdirectory(HttpClient)
