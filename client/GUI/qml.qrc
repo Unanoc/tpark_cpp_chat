@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>messenger-window.qml</file>
+    </qresource>
+</RCC>

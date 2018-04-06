@@ -16,22 +16,24 @@ else()
     set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/qt5/bin")
 endif()
 
-find_package(Qt5Core REQUIRED)
+find_package(Qt5Core CONFIG REQUIRED Qml Quick Gui)
+find_package(Qt5Quick REQUIRED)
 find_package(Qt5Gui REQUIRED)
-find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Qml REQUIRED)
+
+qt5_add_resources(qml_QRC GUI/qml.qrc)
 
 include_directories(${PROJECT_SOURCE_DIR}/HttpClient)
 add_subdirectory(HttpClient)
 
-include_directories(${PROJECT_SOURCE_DIR}/GUI)
-add_subdirectory(GUI)
-
-qt5_wrap_ui(UI_HEADERS GUI/messenger-window.ui)
-
-add_executable(${PROJECT_NAME} main.cpp ${UI_HEADERS})
+if(WIN32)
+	add_executable(${PROJECT_NAME} WIN32 main.cpp ${qml_QRC})
+else()
+	add_executable(${PROJECT_NAME} main.cpp ${qml_QRC})
+endif()
 
 target_link_libraries(${PROJECT_NAME} HttpClient)
-target_link_libraries(${PROJECT_NAME} GUI)
 target_link_libraries(${PROJECT_NAME} Qt5::Core)
 target_link_libraries(${PROJECT_NAME} Qt5::Gui)
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
+target_link_libraries(${PROJECT_NAME} Qt5::Qml)
+target_link_libraries(${PROJECT_NAME} Qt5::Quick)
