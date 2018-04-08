@@ -10,7 +10,7 @@ create table Users (
 -- Хотел бы я сделать шардирование, и ключом выбрать Chats.id, но не знаю, сколько времени это займёт.
 create table Chats (
   id       serial primary key,
-  title    text   not null unique,
+  title    text not null unique,
   -- is_public boolean,
   admin_id serial not null REFERENCES Users (id)
 );
@@ -18,13 +18,13 @@ create table Chats (
 -- Сессии пользователей. По одному ключу авторизации на устройство.
 create table Sessions (
   id          serial primary key,
-  user_id     integer                     not null references Users (id),
-  session_key text                        not null,
+  user_id     integer not null references Users (id),
+  session_key text not null,
   entry_time  timestamp without time zone not null
 );
 
 -- Сообщения, самое важное.
-create table Meseges (
+create table Messages (
   id        serial primary key,
   sender_id integer                     not null references Users (id),
   chat_id   integer                     not null references Chats (id),
@@ -43,7 +43,7 @@ create table Chat_User (
 -- Ненормализованная таблица с информацией для профиля пользователя.
 create table User_counters (
   id        serial primary key,
-  user_id   integer                     not null references Users (id),
+  user_id   integer not null references Users (id),
   last_view timestamp without time zone not null
 );
 
