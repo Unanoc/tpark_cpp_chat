@@ -147,10 +147,14 @@ begin
   insert into Users (username, password_hash) values (
     $1,
     $2
-  ) on conflict do nothing returning id into new_user_id;
+  )
+  on conflict do nothing
+  returning id
+    into new_user_id;
   return new_user_id notnull;
 end;
-$$ language 'plpgsql';
+$$
+language 'plpgsql';
 
 -- положить пользователю новый ключ авторизации, когда он приходит с логином и хешем пароля
 create or replace function insert_new_session(username text, password_hash text, new_tocken text)
@@ -258,13 +262,68 @@ end;
 $$
 language 'plpgsql';
 
-
-
 -- удалить пользователя, будучи админом.
 -- удалить чат, будучи админом.
 
 -- присоединить пользователя c именем к чату с именем
 
 -- Послать сообщение в чат, учавствуя в чате
+create or replace function send_to_chat(username text, key text, chat_title text, message_text text)
+  returns boolean as $$
+declare
+  _user_id integer;
+  _chat_id integer;
+begin
+  _user_id := is_authenticated_by_key(send_to_chat.username, key);
+  _chat_id := (select id from Chats where title = chat_title);
+  if (select id from Chat_User where Chat_User.user_id = _user_id and Chat_User.chat_id = _chat_id) notnull then
+    insert into Meseges (sender_id, chat_id, send_time, text) values (
+      _user_id, _chat_id, now(), message_text
+    );
+    return true;
+  end if;
+  return false;
+end;
+$$
+language 'plpgsql';
+
+
+
+
+
+
+---------------------------------------------------------------------------------------------------------
+
 -- получить последние 10
--- получить все, начиная с указанного 
+create or replace function get_from_chat(username text, key text, chat_title text)
+  returns table(sender_username text, send_time timestamp, message_text text) as $$
+declare
+  _user_id integer;
+  _chat_id integer;
+begin
+  _user_id := is_authenticated_by_key(username, key);
+  _chat_id := (select id from Chats where title = chat_title);
+  if (select id from Chat_User where Chat_User.user_id = _user_id and Chat_User.chat_id = _chat_id) notnull then
+    return (select Users.username as sender_username, Meseges.send_time, Meseges.text as message_text from Meseges, Users
+            where Users.id = Meseges.sender_id order by Meseges.id desc limit 10);
+  end if;
+  return null;
+end;
+$$ language 'plpgsql';
+
+-- получить последние сообщения, начиная с переданного времени
+create or replace function get_from_chat_by_time(username text, key text, chat_title text, last_update timestamp)
+  returns table(sender_username text, send_time timestamp, message_text text) as $$
+declare
+  _user_id integer;
+  _chat_id integer;
+begin
+  _user_id := is_authenticated_by_key(username, key);
+  _chat_id := (select id from Chats where title = chat_title);
+  if (select id from Chat_User where Chat_User.user_id = _user_id and Chat_User.chat_id = _chat_id) notnull then
+    return (select Users.username as sender_username, Meseges.send_time, Meseges.text as message_text from Meseges, Users
+            where Users.id = Meseges.sender_id order by Meseges.id desc limit 10);
+  end if;
+  return null;
+end;
+$$ language 'plpgsql';
