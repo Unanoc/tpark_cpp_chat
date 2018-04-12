@@ -1,9 +1,9 @@
 <RCC>
     <qresource prefix="/">
-        <file>messenger-window.qml</file>
+        <file>MessengerWindow.qml</file>
         <file>MainMenu.qml</file>
         <file>MenuIconLive.qml</file>
         <file>MyPage.qml</file>
-        <file>PageExample.qml</file>
+        <file>MainPage.qml</file>
     </qresource>
 </RCC>

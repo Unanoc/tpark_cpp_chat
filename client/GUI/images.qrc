@@ -3,8 +3,16 @@
         <file>Resources/images/shadow_long.png</file>
         <file>Resources/images/shadow_title.png</file>
         <file>Resources/images/icon_settings.png</file>
-        <file>Resources/images/icon_info.png</file>
-        <file>Resources/images/icon_game.png</file>
+        <file>Resources/images/icon_addcontact.png</file>
+        <file>Resources/images/icon_avatarfemale.png</file>
+        <file>Resources/images/icon_avatarmale.png</file>
+        <file>Resources/images/icon_contacts.png</file>
+        <file>Resources/images/icon_groupchat.png</file>
         <file>Resources/images/background.jpg</file>
+        <file>Resources/images/icon_important.png</file>
+        <file>Resources/images/icon_avatarmaleinv.png</file>
+        <file>Resources/images/icon_avatarfemaleinv.png</file>
+        <file>Resources/images/icon_avatargroupinv.png</file>
+        <file>Resources/images/cross.png</file>
     </qresource>
 </RCC>
