@@ -27,7 +27,6 @@ int main(int argc, char **argv) {
 		std::cout << "Start as:" << std::endl << argv[0] << " [host_address] [port]" << std::endl;
 		return 1;
 	}
-	std::cout << "Проверка прошла"
 
 	// СОЗДАНИЕ СОКЕТА
 	int server_sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -46,11 +45,13 @@ int main(int argc, char **argv) {
 	sa.sin_port = htons(port); // номер порта
 	sa.sin_addr.s_addr = inet_addr(host); // sin_addr - это структура in_addr. inet_addr -  конвертирует строку хоста ipv4 в подходящий адрес для структуры in_addr
 
+	/*
 	// setsockopt - устанавливает опции сокета
 	if (setsockopt(server_sock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) == -1) {
 		std::cout << "Error setsockopt(): " << strerror(errno) << std::endl;
 		return 1;
 	}
+
 
 	// Bind - связывает сокет с некоторым адресом (ip:port)
 	if (bind(server_sock, (const sockaddr*)&sa, sizeof(sa)) == -1) {
@@ -58,11 +59,14 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+
+
 	// listen - создаётся очередь запросов на соединение. При этом сокет переводится в режим ожидания запросов со стороны клиентов.
 	if (listen(server_sock, SERVER_BACKLOG) == -1) {
 		std::cout << "Error listen(): " << strerror(errno) << std::endl;
 		return 1;
 	}
+	*/
 
 	// Инициализация базы событийного движка
 	event_base *serv_base = (event_base *)event_init();
@@ -71,11 +75,20 @@ int main(int argc, char **argv) {
 
 	// Ignore SIGPIPE (рекомендовано)
 	signal(SIGPIPE, SIG_IGN);
+	
 
+	if (evhttp_bind_socket(http_server, host, port) == -1) {
+		std::cout << "Error evhttp_accept_socket(): " << strerror(errno) << std::endl;
+	}
+
+
+
+	/*
 	if (evhttp_accept_socket(http_server, server_sock) == -1) { // указываем, на каком сокете слушать подключения:
 		std::cout << "Error evhttp_accept_socket(): " << strerror(errno) << std::endl;
 		return 1;
 	}
+	*/
 
 
 	/*
@@ -83,11 +96,11 @@ int main(int argc, char **argv) {
 	*/
 
 
+
 	// Выставление обработчика на остальные запросы:                             
 	evhttp_set_gencb(http_server, on_request, NULL);
 	// Запуск цикла обработки запросов
 	event_base_dispatch(serv_base);
-
 	return 0;
 }
 
