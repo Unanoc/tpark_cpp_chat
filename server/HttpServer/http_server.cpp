@@ -12,6 +12,7 @@
 
 #define SERVER_BACKLOG 128
 #define BUF_LEN 34
+#define JSON_TEST "{'chat_name1':[{'send_time':123456,'username':'','texttext':''},{'send_time':1234567,'username':'','texttext':''}],'chat_name2':[{'send_time':123456,'username':'','texttext':''}],'chat_name3':[]}"
 
 
 
@@ -111,6 +112,7 @@ void on_request(struct evhttp_request * req, void * arg) {
 		return; 
 	}
 
+	/*
 	// добавляем текст(форматированную строку) в конец буффера
 	evbuffer_add_printf(evb, "<html><head><title>%s Page</title></head><body>\n", SERVER_NAME);
 	// добавляем данные в конец буфера
@@ -120,10 +122,14 @@ void on_request(struct evhttp_request * req, void * arg) {
 					req->uri, req->remote_host, evhttp_find_header(req->input_headers, "User-Agent"));
 
 	evbuffer_add_printf(evb, "</body></html>");
+	*/
+
+	evbuffer_add_printf(evb, JSON_TEST);
 
 	// Set HTTP headers
 	evhttp_add_header(req->output_headers, "Server", SERVER_NAME);
 	evhttp_add_header(req->output_headers, "Connection", "close");
+	evhttp_add_header(req->output_headers, "Content-Type", "application/json");
 
 	// Send reply
 	evhttp_send_reply(req, HTTP_OK, "OK", evb);
