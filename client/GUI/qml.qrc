@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>MessengerWindow.qml</file>
+        <file>MainMenu.qml</file>
+        <file>MenuIconLive.qml</file>
+        <file>MyPage.qml</file>
+        <file>MainPage.qml</file>
+    </qresource>
+</RCC>
