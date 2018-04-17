@@ -11,6 +11,7 @@
 #include <iostream>
 #include "server.h"
 
+
 #define HEADER_BUFFER_SIZE 1024
 #define ERROR_RESPONSE_SIZE 1024
 
@@ -20,7 +21,7 @@ void generic_handler(struct evhttp_request *request, void *arg) {
     buf = evbuffer_new();
 
     if (buf == NULL) {
-    	std::cout << "Failed to create response buffer " << strerror(errno) << std::endl;
+      std::cout << "Failed to create response buffer " << strerror(errno) << std::endl;
     }
 
     evbuffer_add_printf(buf, "Requested: %s \n", evhttp_request_uri(request)); //сюда можно запихивать созданный json-ответ
@@ -72,15 +73,15 @@ void send_message_handler(struct evhttp_request *request, void *arg) {
    struct event_base *base = (struct event_base *)arg;
 
    // Request
-   struct evbuffer *request_buffer;
-   size_t request_len;
-   char *request_data_buffer;
+   struct evbuffer *requestBuffer;
+   size_t requestLen;
+   char *requestDataBuffer;
 
-   json_t *request_JSON;
+   json_t *requestJSON;
    json_error_t error;
 
    // Error buffer
-   char error_text[ERROR_RESPONSE_SIZE];
+   char errorText[ERROR_RESPONSE_SIZE];
 
    // Process Request
    requestBuffer = evhttp_request_get_input_buffer(request);

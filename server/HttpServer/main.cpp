@@ -7,6 +7,7 @@
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <jansson.h>
 
 #include <iostream>
 #include "server.h"
@@ -16,14 +17,17 @@ void brokenPipe(int signum) {
    fprintf(stderr, "Broken Pipe (%d)\n", signum);
 }
 
+
+
 int main(int argc, char **argv) {
 
-	short http_port = 8000;
+	  short http_port = 8000;
    	const char *http_addr = "127.0.0.1";
    	struct evhttp *http_server = NULL;
 
    	if (argc > 1) {
       	http_addr = argv[1];
+        
       	if (argc > 2) {
          	http_port = atol(argv[2]);
       	}
