@@ -1,27 +1,48 @@
 #include <QNetworkAccessManager>
 #include <QtNetwork>
 #include <iostream>
+#include <map>
+#include <utility>
 
 #include "client.h"
 
 
-Client::Client(QWidget *parent){
-    manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinished(QNetworkReply*)));
+std::map<std::pair<std::string,std::string>,Client*> Client::instances;
+
+Client *Client::GetInstance(const std::string &login, const std::string &password) {
+    auto itClient = instances.find({login, password});
+    if (itClient != instances.end())
+        return (*itClient).second;
+    Client *client = new Client(login, password);
+    instances[{login, password}] = client;
+    return client;
 }
 
-QNetworkRequest Client::createRequest() {
+void Client::destroyAll() {
+    for (auto it = instances.begin(); it != instances.end(); ++it)
+        delete (*it).second;
+    instances.clear();
+}
+
+Client::Client(const std::string &login, const std::string &password, QWidget *parent) {
+    manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply * )), this, SLOT(replyFinished(QNetworkReply * )));
+    this->login = login;
+    this->password = password;
+}
+
+QNetworkRequest Client::createRequest(QUrl qUrl) {
 
     QNetworkRequest request;
-    request.setUrl(QUrl("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22nome%2C%20ak%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"));
-    request.setRawHeader("Content-Type","application/json");
+    request.setUrl(qUrl);
+    request.setRawHeader("Content-Type", "application/json");
     return request;
 }
 
 
 void Client::Print() {
 
-    QNetworkRequest request = createRequest();
+    QNetworkRequest request = createRequest(QUrl(""));
 
     manager->get(request);
 }
@@ -42,12 +63,11 @@ QJsonObject Client::parseReply(QNetworkReply *reply) {
     QJsonParseError parseError;
     QByteArray replyText = reply->readAll();
     jsonDoc = QJsonDocument::fromJson(replyText, &parseError);
-    if(parseError.error != QJsonParseError::NoError){
-        qDebug() << replyText;
+    if (parseError.error != QJsonParseError::NoError) {
         qWarning() << "Json parse error: " << parseError.errorString();
-    }else{
-        if(jsonDoc.isObject())
-            jsonObj  = jsonDoc.object();
+    } else {
+        if (jsonDoc.isObject())
+            jsonObj = jsonDoc.object();
         else if (jsonDoc.isArray())
             jsonObj["non_field_errors"] = jsonDoc.array();
     }
