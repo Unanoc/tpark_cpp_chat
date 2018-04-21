@@ -1,15 +1,12 @@
+#include <iostream>
 #include <errno.h>
 #include <event.h>
 #include <evhttp.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 #include <signal.h>
-
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <jansson.h>
 
-#include <iostream>
 #include "server.h"
 
 
@@ -20,7 +17,7 @@ void brokenPipe(int signum) {
 
 int main(int argc, char **argv) {
 
-	  short http_port = 8000;
+    short http_port = 8000;
    	const char *http_addr = "127.0.0.1";
    	struct evhttp *http_server = NULL;
 
@@ -40,7 +37,7 @@ int main(int argc, char **argv) {
 
     /* Set callbacks for different requests. */
     evhttp_set_cb(http_server, "/send_message", send_message_handler, NULL);
-    
+
     /*
     	Other handlers will place here
     */

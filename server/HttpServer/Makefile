@@ -1,4 +1,4 @@
-SRCS=main.cpp server.cpp
+SRCS=main.cpp server.cpp json_converter.cpp
 LDFLAGS=-levent
 JANSONFLAG=-ljansson
 CXXFLAGS=-I/usr/local/include -L/usr/local/lib

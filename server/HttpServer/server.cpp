@@ -1,20 +1,13 @@
+#include <iostream>
 #include <errno.h>
 #include <event.h>
 #include <evhttp.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <jansson.h>
 
-#include <iostream>
 #include "server.h"
-#include "structures.h"
-
-
-#define HEADER_BUFFER_SIZE 1024
-#define ERROR_RESPONSE_SIZE 1024
+#include "json_converter.h"
 
 
 
@@ -37,12 +30,70 @@ void generic_handler(struct evhttp_request *request, void *arg) {
 }
 
 
+void send_message_handler(struct evhttp_request *request, void *arg) {
+   logger(request);
+
+   struct event_base *base = (struct event_base *)arg;
+
+   /* Getting data body from POST request */
+   struct evbuffer *requestBuffer = evhttp_request_get_input_buffer(request); 
+   /* Getting length of body from POST request */
+   size_t requestLen = evbuffer_get_length(requestBuffer);
+
+
+   /* Getting data body from structure to string, but there is not only json in this string */
+   char *requestDataString = (char *)malloc(sizeof(char) * requestLen);
+   memset(requestDataString, 0, requestLen);
+   evbuffer_copyout(requestBuffer, requestDataString, requestLen); //evbuffer_copyout automaticly frees requestBuffer
+
+   char errorText[1024];
+   json_error_t error;
+
+   /* Getting JSON instance */
+   json_t *requestJSON = json_loadb(requestDataString, requestLen, 0, &error);
+
+
+   if (requestJSON != NULL) {
+
+      /* May be in future this printing of JSON will be usefull, but now it's temporary for debug */
+      /* Getting perfect JSON string */
+      requestDataString = json_dumps(requestJSON, JSON_INDENT(3));
+
+      /* Print JSON */
+      printf("%s\n", requestDataString);
+
+
+      /* Put the message in DB */
+      JsonConverter jsonConv;
+      Message msg = jsonConv.fromJsonToMessage(requestJSON);
+      // std::cout << msg.sender << " " << msg.chat << std::endl;
+      // put_message_in_db(&msg);
+
+
+
+      /* After all, send 200 OK to client */
+      struct evbuffer *responseBuffer = evbuffer_new();
+      evbuffer_add(responseBuffer, requestDataString, strlen(requestDataString));
+      evhttp_send_reply(request, HTTP_OK, "OK", responseBuffer);
+
+
+
+      evbuffer_free(responseBuffer);
+      free(requestDataString);
+      json_decref(requestJSON);
+   } else 
+      snprintf(errorText, 1024, "Input error: on line %d: %s\n", error.line, error.text);
+   
+   return;
+}
+
+
 // void send_message_response(struct evhttp_request *request, json_t *requestJSON, struct event_base *base) {
 //    // Reponse
 //    json_t *responseJSON = requestJSON;
 //    json_t *message;
 
-//    char responseHeader[HEADER_BUFFER_SIZE];
+//    char responseHeader[1024];
 
 //    char *responseData;
 //    int responseLen;
@@ -74,91 +125,3 @@ void generic_handler(struct evhttp_request *request, void *arg) {
 
 //    evbuffer_free(responseBuffer);
 // }
-
-
-
-struct message send_message_JSON_parser(json_t *requestJSON);
-
-
-
-
-void send_message_handler(struct evhttp_request *request, void *arg) {
-   struct event_base *base = (struct event_base *)arg;
-
-   /* Getting data body from POST request */
-   struct evbuffer *requestBuffer = evhttp_request_get_input_buffer(request); 
-   /* Getting length of body from POST request */
-   size_t requestLen = evbuffer_get_length(requestBuffer);
-
-
-   /* Getting data body from structure to string, but there is not only json in this string */
-   char *requestDataString = (char *)malloc(sizeof(char) * requestLen);
-   memset(requestDataString, 0, requestLen);
-   evbuffer_copyout(requestBuffer, requestDataString, requestLen); //evbuffer_copyout automaticly frees requestBuffer
-
-
-   logger(request);
-
-
-   char errorText[ERROR_RESPONSE_SIZE];
-   json_error_t error;
-
-   /* Getting JSON instance */
-   json_t *requestJSON = json_loadb(requestDataString, requestLen, 0, &error);
-   /* Empty this string */
-   free(requestDataString);
-
-
-
-
-   if (requestJSON != NULL) {
-
-      /* May be in future this printing of JSON will be usefull, but now it's temporary */
-      /* Getting perfect JSON string */
-      requestDataString = json_dumps(requestJSON, JSON_INDENT(3));
-      /* Print JSON */
-      printf("%s\n", requestDataString);
-      free(requestDataString);
-
-
-      /* Put the message in DB */
-      message msg = send_message_JSON_parser(requestJSON);
-      // put_message_in_db(&msg);
-
-      // printf("%d %d %s\n", msg.sender, msg.chat, msg.text);
-
-
-      /* After all, send 200 OK to client */
-      struct evbuffer *responseBuffer;
-      responseBuffer = evbuffer_new();
-      evhttp_send_reply(request, HTTP_OK, "OK", responseBuffer);
-
-      evbuffer_free(responseBuffer);
-      json_decref(requestJSON);
-
-   } else 
-      snprintf(errorText, ERROR_RESPONSE_SIZE, "Input error: on line %d: %s\n", error.line, error.text);
-   
-   return;
-}
-
-
-struct message send_message_JSON_parser(json_t *requestJSON) {
-      json_t *sender_json, *chat_json, *text_json;
-
-      sender_json = json_object_get(requestJSON, "sender");
-      chat_json = json_object_get(requestJSON, "chat");
-      text_json = json_object_get(requestJSON, "text");
-
-      int sender = atoi(json_string_value(sender_json));
-      int chat = atoi(json_string_value(chat_json));
-      const char * text = json_string_value(text_json);
-
-      message msg(sender, chat, text);
-      
-      printf("%d %d %s\n", msg.sender, msg.chat, msg.text);
-      return msg;
-}
-
-
-
