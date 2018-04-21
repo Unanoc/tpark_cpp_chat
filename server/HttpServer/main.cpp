@@ -18,16 +18,16 @@ void brokenPipe(int signum) {
 int main(int argc, char **argv) {
 
     short http_port = 8000;
-   	const char *http_addr = "127.0.0.1";
-   	struct evhttp *http_server = NULL;
+    const char *http_addr = "127.0.0.1";
+    struct evhttp *http_server = NULL;
 
    	if (argc > 1) {
       	http_addr = argv[1];
         
       	if (argc > 2) {
          	http_port = atol(argv[2]);
-      	}
-   	}
+        }
+    }
 
    	/* Don't exit on broken pipe (just fail with message). It's just recomended... */
    	signal(SIGPIPE, brokenPipe);
@@ -35,6 +35,8 @@ int main(int argc, char **argv) {
     event_init();
     http_server = evhttp_start(http_addr, http_port);
 
+
+    /* MOVE IT IN CEPARATE CLASS IN THE FUTURE */
     /* Set callbacks for different requests. */
     evhttp_set_cb(http_server, "/send_message", send_message_handler, NULL);
 
@@ -42,9 +44,10 @@ int main(int argc, char **argv) {
     	Other handlers will place here
     */
 
-
     /* Set a callback for all other requests. */
     evhttp_set_gencb(http_server, generic_handler, NULL);
+
+
 
     fprintf(stderr, "Server started on %s port %d\n", http_addr, http_port);
 

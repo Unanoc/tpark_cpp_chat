@@ -10,7 +10,6 @@
 #include "json_converter.h"
 
 
-
 void logger(struct evhttp_request *request) {
    printf("URL '%s' from %s\n", evhttp_request_uri(request), evhttp_request_get_host(request)); 
 }
@@ -26,7 +25,7 @@ void generic_handler(struct evhttp_request *request, void *arg) {
 
     logger(request);
     evbuffer_add_printf(buf, "URL %s doesn't exist.", evhttp_request_uri(request)); //сюда можно запихивать созданный json-ответ
-    evhttp_send_reply(request, HTTP_OK, "OK", buf);
+    evhttp_send_reply(request, HTTP_BADMETHOD, "Bad Method", buf);
 }
 
 
@@ -34,7 +33,6 @@ void send_message_handler(struct evhttp_request *request, void *arg) {
    logger(request);
 
    struct event_base *base = (struct event_base *)arg;
-
    /* Getting data body from POST request */
    struct evbuffer *requestBuffer = evhttp_request_get_input_buffer(request); 
    /* Getting length of body from POST request */
@@ -48,35 +46,29 @@ void send_message_handler(struct evhttp_request *request, void *arg) {
 
    char errorText[1024];
    json_error_t error;
-
    /* Getting JSON instance */
    json_t *requestJSON = json_loadb(requestDataString, requestLen, 0, &error);
 
-
    if (requestJSON != NULL) {
-
       /* May be in future this printing of JSON will be usefull, but now it's temporary for debug */
       /* Getting perfect JSON string */
       requestDataString = json_dumps(requestJSON, JSON_INDENT(3));
-
-      /* Print JSON */
+      /* Print JSON for debug*/
       printf("%s\n", requestDataString);
-
 
       /* Put the message in DB */
       JsonConverter jsonConv;
       Message msg = jsonConv.fromJsonToMessage(requestJSON);
-      // std::cout << msg.sender << " " << msg.chat << std::endl;
-      // put_message_in_db(&msg);
 
-
-
-      /* After all, send 200 OK to client */
       struct evbuffer *responseBuffer = evbuffer_new();
       evbuffer_add(responseBuffer, requestDataString, strlen(requestDataString));
-      evhttp_send_reply(request, HTTP_OK, "OK", responseBuffer);
 
-
+      // if (insert_message_in_db(msg)) {
+      //     evhttp_send_reply(request, HTTP_OK, "OK", responseBuffer);
+      // } else {
+      //   evhttp_send_reply(request, HTTP_BADREQUEST, "Bad Request", responseBuffer);
+      // }
+      evhttp_send_reply(request, HTTP_OK, "OK", responseBuffer); //delete it in the future
 
       evbuffer_free(responseBuffer);
       free(requestDataString);
