@@ -21,11 +21,11 @@ int main(int argc, char **argv) {
     const char *http_addr = "127.0.0.1";
     struct evhttp *http_server = NULL;
 
-   	if (argc > 1) {
-      	http_addr = argv[1];
+    if (argc > 1) {
+        http_addr = argv[1];
         
-      	if (argc > 2) {
-         	http_port = atol(argv[2]);
+        if (argc > 2) {
+          http_port = atol(argv[2]);
         }
     }
 
