@@ -6,7 +6,7 @@
 // функция регистрации по паролю
 // получает имя пользователя и хеш пароля,
 // возвращает user_id или 0 в случае ошибки
-int get_user_id_by_login_pasword(pqxx::connection &c, std::string username, std::string password_hash){
+int get_user_id_by_login_pasword(pqxx::connection &c, std::string &username, std::string &password_hash){
     try {
         pqxx::work w(c); // Start a transaction.
         pqxx::result r = w.exec(
@@ -31,7 +31,7 @@ int get_user_id_by_login_pasword(pqxx::connection &c, std::string username, std:
 // функция регистрации по ключу
 // получает имя пользователя и хеш ключа,
 // возвращает user_id или 0 в случае ошибки
-int get_user_id_by_login_session_key(pqxx::connection &c, std::string username, std::string key_hash){
+int get_user_id_by_login_session_key(pqxx::connection &c, std::string &username, std::string &key_hash){
     try {
         pqxx::work w(c); // Start a transaction.
         pqxx::result r = w.exec(
@@ -59,7 +59,7 @@ int get_user_id_by_login_session_key(pqxx::connection &c, std::string username, 
 // функция получения chat_id по user_id и названию
 // получает id пользователя и название группы,
 // возвращает chat_id или 0 в случае ошибки
-int get_chat_id_by_user_id_chat_title(pqxx::connection &c, int user_id, std::string chat_title){
+int get_chat_id_by_user_id_chat_title(pqxx::connection &c, int user_id, std::string &chat_title){
     try {
         pqxx::work w(c); // Start a transaction.
         pqxx::result r = w.exec(

@@ -64,11 +64,14 @@ void send_message_handler(struct evhttp_request *request, void *arg) {
       struct evbuffer *responseBuffer = evbuffer_new();
       evbuffer_add(responseBuffer, requestDataString, strlen(requestDataString));
 
-      // if (insert_message_in_db(msg)) {
-      //     evhttp_send_reply(request, HTTP_OK, "OK", responseBuffer);
-      // } else {
-      //   evhttp_send_reply(request, HTTP_BADREQUEST, "Bad Request", responseBuffer);
+      // pqxx::connection connection_db;
+      // int user_id = get_user_id_by_login_pasword(connection_db, std::string &username, std::string &password_hash);
+
+      // if (user_id == 0) {
+
       // }
+
+
       evhttp_send_reply(request, HTTP_OK, "OK", responseBuffer); //delete it in the future
 
       evbuffer_free(responseBuffer);

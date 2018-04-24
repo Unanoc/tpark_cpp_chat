@@ -19,6 +19,10 @@ MessageSend JsonConverter::fromJsonToMessage(json_t *requestJSON) {
 	if(!json_is_string(text_json))
         fprintf(stderr, "error: text is not a string\n");
 
-	MessageSend msg(json_string_value(username_json), json_string_value(chat_json), json_string_value(text_json));
+    json_t *password_json = json_object_get(root, "password");
+	if(!json_is_string(password_json))
+        fprintf(stderr, "error: password is not a string\n");
+
+	MessageSend msg(json_string_value(username_json), json_string_value(chat_json), json_string_value(text_json), json_string_value(password_json));
   	return msg;
 }

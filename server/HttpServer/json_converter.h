@@ -13,7 +13,8 @@ public:
 	std::string username;
 	std::string chat;
 	std::string text;
-	MessageSend(std::string username, std::string chatName, std::string msgText) : username(username), chat(chatName), text(msgText) {}
+	std::string password;
+	MessageSend(std::string username, std::string chatName, std::string msgText, std::string password) : username(username), chat(chatName), text(msgText), password(password) {}
 };
 
 class MessageGet {
