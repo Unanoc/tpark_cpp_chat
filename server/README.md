@@ -30,3 +30,10 @@ For macOs:
 
 For Ubuntu:
 - **sudo apt-get install libevent-dev**
+
+
+### Library "libpqxx"
+For macOs:
+- **brew install libpqxx**
+- **brew install postgresql**
+- **brew install libpq**

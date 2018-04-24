@@ -1,11 +1,12 @@
 SRCS=main.cpp server.cpp json_converter.cpp
 LDFLAGS=-levent
 JANSONFLAG=-ljansson
-CXXFLAGS=-I/usr/local/include -L/usr/local/lib
+PSTGR=-lpqxx -lpq
+CXXFLAGS=-I/usr/local/include -L/usr/local/lib -L/usr/local/opt/libpq/lib -L/usr/local/opt/libpq/include
 PROG=http_server
 
 all:
-	g++ ${SRCS} -o ${PROG} ${LDFLAGS} ${JANSONFLAG} ${CXXFLAGS}
+	g++ -std=c++17 ${SRCS} -o ${PROG} ${LDFLAGS} ${JANSONFLAG} ${CXXFLAGS} ${PSTGR}
 
 clean:
 	rm -f ${PROG}

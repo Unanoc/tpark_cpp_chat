@@ -1,10 +1,7 @@
-class Message {
-public:
-    std::string username;
-    long int send_timestamp = 0;
-    std::string text;
-};
+#ifndef DB_INTERSECTION_H
+#define DB_INTERSECTION_H
 
+#include "../json_converter.h"
 // функция регистрации по паролю
 // получает имя пользователя и хеш пароля,
 // возвращает user_id или 0 в случае ошибки
@@ -27,4 +24,7 @@ void get_chat_id_by_user_id_chat_title(pqxx::connection &c, int user_id, int cha
 
 // функция получения всех новых сообщений,
 // начиная с переданного времени(Unix time - секунды с 00:00 01.01.1970).
-std::vector<Message> get_from_chat_by_time(pqxx::connection &c, int user_id, int unix_epoch);
+std::vector<MessageGet> get_from_chat_by_time(pqxx::connection &c, int user_id, int unix_epoch);
+
+
+#endif 

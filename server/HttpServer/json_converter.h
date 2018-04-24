@@ -8,17 +8,28 @@
 #include <jansson.h>
 
 
-class Message {
+class MessageSend {
 public:
-	std::string sender;
+	std::string username;
 	std::string chat;
 	std::string text;
-	Message(std::string username, std::string chatName, std::string msgText) : sender(username), chat(chatName), text(msgText) {}
+	MessageSend(std::string username, std::string chatName, std::string msgText) : username(username), chat(chatName), text(msgText) {}
 };
+
+class MessageGet {
+public:
+    std::string username;
+    long int send_timestamp;
+    std::string text;
+
+    MessageGet() :send_timestamp(0) {}
+};
+
+
 
 class JsonConverter {
 public:
-	Message fromJsonToMessage(json_t *requestJSON);
+	MessageSend fromJsonToMessage(json_t *requestJSON);
 };
 
 

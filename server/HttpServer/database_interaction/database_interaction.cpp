@@ -1,6 +1,7 @@
 #include <iostream>
 #include <pqxx/pqxx>
 #include <vector>
+#include "../json_converter.h"
 
 // функция регистрации по паролю
 // получает имя пользователя и хеш пароля,
@@ -103,7 +104,7 @@ void get_chat_id_by_user_id_chat_title(pqxx::connection &c, int user_id, int cha
 }
 
 
-std::vector<Message> get_from_chat_by_time(pqxx::connection &c, int user_id, int unix_epoch) {
+std::vector<MessageGet> get_from_chat_by_time(pqxx::connection &c, int user_id, int unix_epoch) {
     try {
         pqxx::work w(c); // Start a transaction.
         pqxx::result r = w.exec(
@@ -122,11 +123,11 @@ std::vector<Message> get_from_chat_by_time(pqxx::connection &c, int user_id, int
             ");"
         );
         w.commit();
-        std::vector <Message>result;
+        std::vector <MessageGet>result;
         const int num_rows = r.size();
         for (int rownum = 0; rownum < num_rows; ++rownum) {
             const pqxx::row row = r[rownum];
-            Message m;
+            MessageGet m;
             m.username = row[0].as<std::string>();
             m.send_timestamp = row[1].as<long int>();
             m.text = row[2].as<std::string>();

@@ -5,10 +5,11 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <jansson.h>
+#include <pqxx/pqxx>
 
 #include "server.h"
 #include "json_converter.h"
-
+#include "database_interaction/database_interaction.hpp"
 
 void logger(struct evhttp_request *request) {
    printf("URL '%s' from %s\n", evhttp_request_uri(request), evhttp_request_get_host(request)); 
@@ -58,7 +59,7 @@ void send_message_handler(struct evhttp_request *request, void *arg) {
 
       /* Put the message in DB */
       JsonConverter jsonConv;
-      Message msg = jsonConv.fromJsonToMessage(requestJSON);
+      MessageSend msg = jsonConv.fromJsonToMessage(requestJSON);
 
       struct evbuffer *responseBuffer = evbuffer_new();
       evbuffer_add(responseBuffer, requestDataString, strlen(requestDataString));
