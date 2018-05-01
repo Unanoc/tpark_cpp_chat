@@ -27,60 +27,6 @@ MyPage {
             message: "Lorem ipsum dolor sit amet, consectet..."
             avatar: "qrc:/Resources/images/icon_avatargroupinv.png"
         }
-
-        ListElement {
-            name: "#MALEUSERNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatarmaleinv.png"
-        }
-
-        ListElement {
-            name: "#FEMALEUSERNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatarfemaleinv.png"
-        }
-
-        ListElement {
-            name: "#CHATNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatargroupinv.png"
-        }
-
-        ListElement {
-            name: "#MALEUSERNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatarmaleinv.png"
-        }
-
-        ListElement {
-            name: "#FEMALEUSERNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatarfemaleinv.png"
-        }
-
-        ListElement {
-            name: "#CHATNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatargroupinv.png"
-        }
-
-        ListElement {
-            name: "#MALEUSERNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatarmaleinv.png"
-        }
-
-        ListElement {
-            name: "#FEMALEUSERNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatarfemaleinv.png"
-        }
-
-        ListElement {
-            name: "#CHATNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatargroupinv.png"
-        }
     }
 
     // Колонка с чатами
@@ -139,14 +85,23 @@ MyPage {
             width: parent.width
             y: parent.y
 
-            // TODO: Исправить относительные позиции элементов
-            Button {
-                id: attach
-                x: 0
-                y: 0
-                text: "Attach"
-                //x: parent.x
+            Item {
+                id: item
+                signal qmlSignal(var anObject)
+                // TODO: Исправить относительные позиции элементов
+                Button {
+                    id: attach
+                    x: 0
+                    y: 0
+                    text: "Attach"
+                    //x: parent.x
+                    onClicked: {
+                        item.qmlSignal(item)
+                    }
+                }
             }
+
+
 
             TextArea {
                 id: messageField
@@ -261,7 +216,6 @@ MyPage {
                 }
 
                 onClicked: {
-                    clickAnimation
                 }
             }
 

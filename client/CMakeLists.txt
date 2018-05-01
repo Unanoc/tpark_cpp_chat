@@ -21,6 +21,7 @@ find_package(Qt5Quick REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Qml REQUIRED)
 find_package(Qt5Network REQUIRED)
+find_package(Qt5Widgets REQUIRED)
 qt5_add_resources(qml_QRC GUI/qml.qrc GUI/images.qrc GUI/fonts.qrc)
 
 
@@ -28,9 +29,9 @@ include_directories(${PROJECT_SOURCE_DIR}/HttpClient)
 add_subdirectory(HttpClient)
 
 if(WIN32)
-	add_executable(${PROJECT_NAME} WIN32 main.cpp ${qml_QRC})
+    add_executable(${PROJECT_NAME} WIN32 main.cpp ${qml_QRC})
 else()
-	add_executable(${PROJECT_NAME} main.cpp ${qml_QRC})
+    add_executable(${PROJECT_NAME} main.cpp ${qml_QRC})
 endif()
 
 target_link_libraries(${PROJECT_NAME} HttpClient)
@@ -38,5 +39,6 @@ target_link_libraries(${PROJECT_NAME} Qt5::Core)
 target_link_libraries(${PROJECT_NAME} Qt5::Gui)
 target_link_libraries(${PROJECT_NAME} Qt5::Qml)
 target_link_libraries(${PROJECT_NAME} Qt5::Quick)
-target_link_libraries(${PROJECT_NAME}  Qt5::Network)
+target_link_libraries(${PROJECT_NAME} Qt5::Network)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 
