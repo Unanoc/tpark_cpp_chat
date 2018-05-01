@@ -87,7 +87,6 @@ MyPage {
 
             Item {
                 id: item
-                signal qmlSignal(var anObject)
                 // TODO: Исправить относительные позиции элементов
                 Button {
                     id: attach
@@ -96,7 +95,7 @@ MyPage {
                     text: "Attach"
                     //x: parent.x
                     onClicked: {
-                        item.qmlSignal(item)
+                        receiver.sendToQml();
                     }
                 }
             }
