@@ -12,6 +12,10 @@ ApplicationWindow {
     // Размер приложения
     width: 1200
     height: 720
+    maximumHeight: height
+    maximumWidth: width
+    minimumWidth: width
+    minimumHeight: height
 
     visible: true
 
