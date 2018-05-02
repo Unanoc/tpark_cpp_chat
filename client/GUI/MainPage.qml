@@ -14,11 +14,23 @@ MyPage {
         }
     }
 
-    // Динамически подгружаемые чаты
+    // Модель списка сообщений чата
+    ListModel {
+        id: messageModel
+
+        ListElement {
+            sender: "#SENDER"
+            message: "Lorem ipsum"
+            avatar: "qrc:/Resources/images/icon_avatarmale.png"
+            //time: date
+        }
+    }
+
+    // Модель списка чатов
     ListModel {
         id: chatModel
 
-        // Здесь нужно заполнять динамически для каждого чата
+        // Тестовые данные
         ListElement {
             name: "#MALEUSERNAME"
             message: "Lorem ipsum dolor sit amet, consectet..."
@@ -50,23 +62,29 @@ MyPage {
             width: parent.width
             height: parent.height
 
-            Item {
-                id: chatList
+            Rectangle {
                 width: parent.width
                 height: parent.height
+                color: palette.darkPrimary
 
-                ListView {
-                    id: chatListView
-                    anchors.fill: parent
-                    model: chatModel
-                    clip: true
-                    delegate: chatDelegate
-                    ScrollBar.vertical: ScrollBar {
-                        active: true
-                        interactive: false
+                Item {
+                    id: chatList
+                    width: parent.width
+                    height: parent.height
+
+                    ListView {
+                        id: chatListView
+                        anchors.fill: parent
+                        model: chatModel
+                        clip: true
+                        delegate: chatDelegate
+                        ScrollBar.vertical: ScrollBar {
+                            active: true
+                            interactive: false
+                        }
+
+                        boundsBehavior: Flickable.StopAtBounds
                     }
-
-                    boundsBehavior: Flickable.StopAtBounds
                 }
             }
         }
@@ -79,71 +97,68 @@ MyPage {
         y: parent.y
         width: parent.width * 0.7
         height: parent.height
-
+/*
         Rectangle {
             id: chatPanel
+            x: parent.x
+            color: palette.primary
+            height: 50
+            width: 50
         }
 
 
-        // Панель набора сообщения
-        Rectangle {
-            id: messagePanel
-            color: palette.darkPrimary
-            anchors.bottom: parent.bottom
-            height: 40
-            width: parent.width
-            y: parent.y
+*/
 
-            Item {
-                id: item
-                // TODO: Исправить относительные позиции элементов
+        // Панель набора сообщения
+        Item {
+            anchors.bottom: currentDialogue.bottom
+            //anchors.top: parent.bottom
+            Rectangle {
+                id: writePanel
+                color: palette.darkPrimary
+                height: 40
+                width: parent.parent.width
+                y: parent.parent.y
+
                 Button {
                     id: attach
                     x: 0
                     y: 0
                     text: "Attach"
-                    //x: parent.x
-                    onClicked: {
+                    onClicked: { // Пока тестовая функция с сигналом
                         receiver.appendChat({"name": "#TEST", "message": "Lorem Ipsum", "avatar": "qrc:/Resources/images/icon_avatarmaleinv.png"});
                     }
                 }
+
+                TextField {
+                    id: messageField
+                    anchors.fill: parent
+                    visible: true
+                    wrapMode: "Wrap"
+                    placeholderText: "Write your message..."
+                    anchors.rightMargin: 100
+                    anchors.leftMargin: 99
+                }
+
+                Button {
+                    id: send
+                    x: 740
+                    y: 0
+                    text: "Send"
+                    //x: messageField.x + messageField.width
+                }
             }
+        }
 
-            TextField {
-                id: messageField
-                anchors.fill: parent
-                visible: true
-                wrapMode: "Wrap"
-                placeholderText: "Write your message..."
-                anchors.rightMargin: 99
-                anchors.leftMargin: 100
-            }
 
-            /*
-            TextArea {
-                id: messageField
-                anchors.fill: parent
-                visible: true
-                wrapMode: TextArea.Wrap
-                placeholderText: "Write your message..."
-                placeholderTextColor:
-                color: messageField.focus == true ? palette.darkText : palette.text
-                //color: palette.text
-                anchors.rightMargin: 99
-                anchors.leftMargin: 100
-                //width: parent.width * 0.7
-                //x: attach.x + attach.width
-            }*/
 
-            Button {
-                id: send
-                x: 740
-                y: 0
-                text: "Send"
-                //x: messageField.x + messageField.width
-            }
-
-        // TODO: Заполнить
+        Rectangle {
+            id: chatPanel
+            height: 50
+            width: 50
+            color: palette.primary
+            //x: parent.x
+            //y: parent.y
         }
     }
 
@@ -224,7 +239,7 @@ MyPage {
                 // TODO: дополнить кнопки логикой
                 onEntered: {
                     if (!menuIsShown) {
-                        parent.color = palette.currentHighlightItem
+                        parent.color = palette.currentHoveredItem
                     }
                 }
 
@@ -235,6 +250,8 @@ MyPage {
                 }
 
                 onClicked: {
+                    parent.color = palette.currentHighlightItem
+                    showChat();
                 }
             }
 
@@ -244,6 +261,17 @@ MyPage {
 
                 // TODO: допилить анимацию при нажатии
             }
+        }
+    }
+
+    // Делегат для отображения сообщения
+    Component {
+        id: messageDelegate
+
+        Rectangle {
+            id: messageItem
+            height: 50
+            color: palette.darkPrimary
         }
     }
 }
