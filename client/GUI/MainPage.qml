@@ -6,6 +6,8 @@ import QtQuick.Controls.Styles 1.4
 MyPage {
     id: mainPage
 
+    objectName: "mainPage"
+
     // Связь с плюсами
     Connections {
         target: receiver
@@ -13,6 +15,8 @@ MyPage {
             chatModel.append(chat)
         }
     }
+
+    signal dropInfo(var json)
 
     // Модель списка сообщений чата
     ListModel {
@@ -127,7 +131,7 @@ MyPage {
                     y: 0
                     text: "Attach"
                     onClicked: { // Пока тестовая функция с сигналом
-                        receiver.receiveFromQml();
+                        receiver.chatSlot();
                     }
                 }
 
@@ -146,7 +150,10 @@ MyPage {
                     x: 740
                     y: 0
                     text: "Send"
-                    //x: messageField.x + messageField.width
+                    onClicked: {
+                        dropInfo({sender: "sender", message: "lorem ipsum"})
+                        //console.log("Emit")
+                    }
                 }
             }
        // }
