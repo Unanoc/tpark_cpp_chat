@@ -110,12 +110,13 @@ MyPage {
 */
 
         // Панель набора сообщения
-        Item {
-            anchors.bottom: currentDialogue.bottom
+        //Item {
+            //anchors.bottom: parent.bottom
             //anchors.top: parent.bottom
             Rectangle {
                 id: writePanel
                 color: palette.darkPrimary
+                anchors.bottom: parent.bottom
                 height: 40
                 width: parent.parent.width
                 y: parent.parent.y
@@ -126,7 +127,7 @@ MyPage {
                     y: 0
                     text: "Attach"
                     onClicked: { // Пока тестовая функция с сигналом
-                        receiver.appendChat({"name": "#TEST", "message": "Lorem Ipsum", "avatar": "qrc:/Resources/images/icon_avatarmaleinv.png"});
+                        receiver.receiveFromQml();
                     }
                 }
 
@@ -148,10 +149,10 @@ MyPage {
                     //x: messageField.x + messageField.width
                 }
             }
-        }
+       // }
 
 
-
+/*
         Rectangle {
             id: chatPanel
             height: 50
@@ -159,7 +160,7 @@ MyPage {
             color: palette.primary
             //x: parent.x
             //y: parent.y
-        }
+        }*/
     }
 
     // Делегат для отображения данных на списке чатов
@@ -264,6 +265,7 @@ MyPage {
         }
     }
 
+    // TODO
     // Делегат для отображения сообщения
     Component {
         id: messageDelegate

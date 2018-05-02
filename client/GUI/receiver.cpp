@@ -4,10 +4,6 @@
 
 Receiver::Receiver(QObject* parent) : QObject(parent) {}
 
-void Receiver::updateChatList(QJsonArray chats) {
-
-}
-
 void Receiver::receiveFromQml() {
-	qDebug() << "Received in C++ from QML";
+    emit appendChat({{"name", "test"},{"message", "Lorem Ipsum"},{"avatar","qrc:/Resources/images/icon_avatarmaleinv.png"}});
 }

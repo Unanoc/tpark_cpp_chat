@@ -10,7 +10,7 @@ class Receiver : public QObject {
 
 public:
 	explicit Receiver(QObject* parent = 0);
-	void updateChatList(QJsonArray chats);
+    //void updateChatList(QJsonArray chats);
 
 signals:
 	void appendChat(QJsonObject chat);
