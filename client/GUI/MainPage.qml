@@ -1,9 +1,18 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.3
 import QtGraphicalEffects 1.0
+import QtQuick.Controls.Styles 1.4
 
 MyPage {
     id: mainPage
+
+    // Связь с плюсами
+    Connections {
+        target: receiver
+        onAppendChat: {
+            chatModel.append(chat)
+        }
+    }
 
     // Динамически подгружаемые чаты
     ListModel {
@@ -95,25 +104,36 @@ MyPage {
                     text: "Attach"
                     //x: parent.x
                     onClicked: {
-                        receiver.sendToQml();
+                        receiver.appendChat({"name": "#TEST", "message": "Lorem Ipsum", "avatar": "qrc:/Resources/images/icon_avatarmaleinv.png"});
                     }
                 }
             }
 
+            TextField {
+                id: messageField
+                anchors.fill: parent
+                visible: true
+                wrapMode: "Wrap"
+                placeholderText: "Write your message..."
+                anchors.rightMargin: 99
+                anchors.leftMargin: 100
+            }
 
-
+            /*
             TextArea {
                 id: messageField
                 anchors.fill: parent
                 visible: true
                 wrapMode: TextArea.Wrap
                 placeholderText: "Write your message..."
+                placeholderTextColor:
                 color: messageField.focus == true ? palette.darkText : palette.text
+                //color: palette.text
                 anchors.rightMargin: 99
                 anchors.leftMargin: 100
                 //width: parent.width * 0.7
                 //x: attach.x + attach.width
-            }
+            }*/
 
             Button {
                 id: send

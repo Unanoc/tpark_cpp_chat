@@ -3,15 +3,17 @@
 #define RECEIVER_H
 
 #include <qobject.h>
+#include <qjsonobject.h>
 
 class Receiver : public QObject {
 	Q_OBJECT
 
 public:
 	explicit Receiver(QObject* parent = 0);
+	void updateChatList(QJsonArray chats);
 
 signals:
-	void sendToQml();
+	void appendChat(QJsonObject chat);
 
 public slots:
 	void receiveFromQml();

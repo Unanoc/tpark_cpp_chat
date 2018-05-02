@@ -8,18 +8,14 @@ ApplicationWindow {
 
     // Название приложения (для заголовка с слайдер-баром)
     //property string appTitle: "Pigeon Post"
-    
-    Connections {
-        target: receiver
-        onSendToQml: {
-            console.log("Received in QML from C++")
-        }
-    }
-    
 
     // Размер приложения
     width: 1200
     height: 720
+    maximumHeight: height
+    maximumWidth: width
+    minimumWidth: width
+    minimumHeight: height
 
     visible: true
 
