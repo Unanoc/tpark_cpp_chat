@@ -4,19 +4,20 @@
 
 #include <qobject.h>
 #include <qjsonobject.h>
+#include <qvariant.h>
 
 class Receiver : public QObject {
 	Q_OBJECT
 
 public:
 	explicit Receiver(QObject* parent = 0);
-	void updateChatList(QJsonArray chats);
 
 signals:
 	void appendChat(QJsonObject chat);
 
 public slots:
-	void receiveFromQml();
+    void chatSlot();
+    void getSlot(const QVariant& var);
 };
 
 #endif // !RECEIVER_H
