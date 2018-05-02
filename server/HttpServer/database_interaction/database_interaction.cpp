@@ -6,14 +6,14 @@
 // получает имя пользователя и хеш пароля,
 // возвращает user_id или 0 в случае ошибки
 int get_user_id_by_login_pasword(pqxx::connection &c, std::string username, std::string password_hash){
+    pqxx::work w(c); // Start a transaction.
     try {
-        pqxx::work w(c); // Start a transaction.
         pqxx::result r = w.exec(
-            "select id "
-            "from Users "
-            "where "
+                "select id "
+                "from Users "
+                "where "
                 "Users.username = '"+w.esc(username)+"' and "
-                "Users.password_hash = '"+w.esc(password_hash)+"';"
+                                                     "Users.password_hash = '"+w.esc(password_hash)+"';"
         );
         w.commit();
         if (r.empty()){
@@ -22,6 +22,7 @@ int get_user_id_by_login_pasword(pqxx::connection &c, std::string username, std:
             return r[0][0].as<int>();
         }
     } catch (const std::exception &e) {
+        w.abort();
         std::cerr << e.what() << std::endl;
         throw;
     }
@@ -31,17 +32,17 @@ int get_user_id_by_login_pasword(pqxx::connection &c, std::string username, std:
 // получает имя пользователя и хеш ключа,
 // возвращает user_id или 0 в случае ошибки
 int get_user_id_by_login_session_key(pqxx::connection &c, std::string username, std::string key_hash){
+    pqxx::work w(c); // Start a transaction.
     try {
-        pqxx::work w(c); // Start a transaction.
         pqxx::result r = w.exec(
-            "select "
+                "select "
                 "users.id "
-            "from "
+                "from "
                 "users, sessions "
-            "where "
+                "where "
                 "users.username = '"+w.esc(username)+"' and "
-                "sessions.user_id = users.id and "
-                "sessions.session_key = '"+w.esc(key_hash)+"';"
+                                                     "sessions.user_id = users.id and "
+                                                     "sessions.session_key = '"+w.esc(key_hash)+"';"
         );
         w.commit();
         if (r.empty()){
@@ -50,6 +51,7 @@ int get_user_id_by_login_session_key(pqxx::connection &c, std::string username, 
             return r[0][0].as<int>();
         }
     } catch (const std::exception &e) {
+        w.abort();
         std::cerr << e.what() << std::endl;
         throw;
     }
@@ -59,17 +61,17 @@ int get_user_id_by_login_session_key(pqxx::connection &c, std::string username, 
 // получает id пользователя и название группы,
 // возвращает chat_id или 0 в случае ошибки
 int get_chat_id_by_user_id_chat_title(pqxx::connection &c, int user_id, std::string chat_title){
+    pqxx::work w(c); // Start a transaction.
     try {
-        pqxx::work w(c); // Start a transaction.
         pqxx::result r = w.exec(
-            "select "
+                "select "
                 "chats.id "
-            "from "
+                "from "
                 "chats, chat_user "
-            "where "
+                "where "
                 "chats.title = '"+w.esc(chat_title)+"' and "
-                "chat_user.user_id = "+std::to_string(user_id)+" and "
-                "chat_user.chat_id = chats.id;"
+                                                    "chat_user.user_id = "+std::to_string(user_id)+" and "
+                                                                                                   "chat_user.chat_id = chats.id;"
         );
         w.commit();
         if (r.empty()){
@@ -78,6 +80,7 @@ int get_chat_id_by_user_id_chat_title(pqxx::connection &c, int user_id, std::str
             return r[0][0].as<int>();
         }
     } catch (const std::exception &e) {
+        w.abort();
         std::cerr << e.what() << std::endl;
         throw;
     }
@@ -87,39 +90,46 @@ int get_chat_id_by_user_id_chat_title(pqxx::connection &c, int user_id, std::str
 // получает id пользователя и id группы,
 // НЕ проверяет принадлежность к группе(это проверяется при получении chat_id)
 void get_chat_id_by_user_id_chat_title(pqxx::connection &c, int user_id, int chat_id, std::string &text){
+    pqxx::work w(c); // Start a transaction.
     try {
-        pqxx::work w(c); // Start a transaction.
         pqxx::result r = w.exec(
-            "insert into Messages ("
+                "insert into Messages ("
                 "sender_id, chat_id, send_time, text"
-            ") values ("+
+                ") values ("+
                 std::to_string(user_id)+","+std::to_string(chat_id)+", now(), '"+w.esc(text)+"');"
         );
         w.commit();
     } catch (const std::exception &e) {
+        w.abort();
         std::cerr << e.what() << std::endl;
         throw;
     }
 }
 
+class Message {
+public:
+    std::string username;
+    long int send_timestamp = 0;
+    std::string text;
+};
 
 std::vector<Message> get_from_chat_by_time(pqxx::connection &c, int user_id, int unix_epoch) {
+    pqxx::work w(c); // Start a transaction.
     try {
-        pqxx::work w(c); // Start a transaction.
         pqxx::result r = w.exec(
-        "select "
-            "Users.username as sender_username, "
-            "cast(extract(epoch from Messages.send_time) as integer) as send_time, "
-            "Messages.text as message_text "
-        "from "
-            "Messages, Users, Chats, Chat_User "
-        "where "
-            "Chat_User.user_id = " + std::to_string(user_id) + " and "
-            "Chat_User.chat_id = Messages.chat_id and "
-            "Users.id = user_id and "
-            "Messages.send_time > ("
-                "select timestamp 'epoch' + " + std::to_string(unix_epoch) + " * INTERVAL '1 second'"
-            ");"
+                "select "
+                "Users.username as sender_username, "
+                "cast(extract(epoch from Messages.send_time) as integer) as send_time, "
+                "Messages.text as message_text "
+                "from "
+                "Messages, Users, Chats, Chat_User "
+                "where "
+                "Chat_User.user_id = " + std::to_string(user_id) + " and "
+                                                                   "Chat_User.chat_id = Messages.chat_id and "
+                                                                   "Users.id = user_id and "
+                                                                   "Messages.send_time > ("
+                                                                   "select timestamp 'epoch' + " + std::to_string(unix_epoch) + " * INTERVAL '1 second'"
+                                                                                                                                ");"
         );
         w.commit();
         std::vector <Message>result;
@@ -134,7 +144,8 @@ std::vector<Message> get_from_chat_by_time(pqxx::connection &c, int user_id, int
         }
         return result;
     } catch (const std::exception &e) {
-            std::cerr << e.what() << std::endl;
-            throw;
+        w.abort();
+        std::cerr << e.what() << std::endl;
+        throw;
     }
 }
