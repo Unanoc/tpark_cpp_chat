@@ -1,69 +1,40 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.3
 import QtGraphicalEffects 1.0
+import QtQuick.Controls.Styles 1.4
 
 MyPage {
     id: mainPage
 
-    // Динамически подгружаемые чаты
+    objectName: "mainPage"
+
+    // Связь с плюсами
+    Connections {
+        target: receiver
+        onAppendChat: {
+            chatModel.append(chat)
+        }
+    }
+
+    signal dropInfo(var json)
+
+    // Модель списка сообщений чата
+    ListModel {
+        id: messageModel
+
+        ListElement {
+            sender: "#SENDER"
+            message: "Lorem ipsum"
+            avatar: "qrc:/Resources/images/icon_avatarmale.png"
+            //time: date
+        }
+    }
+
+    // Модель списка чатов
     ListModel {
         id: chatModel
 
-        // Здесь нужно заполнять динамически для каждого чата
-        ListElement {
-            name: "#MALEUSERNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatarmaleinv.png"
-        }
-
-        ListElement {
-            name: "#FEMALEUSERNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatarfemaleinv.png"
-        }
-
-        ListElement {
-            name: "#CHATNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatargroupinv.png"
-        }
-
-        ListElement {
-            name: "#MALEUSERNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatarmaleinv.png"
-        }
-
-        ListElement {
-            name: "#FEMALEUSERNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatarfemaleinv.png"
-        }
-
-        ListElement {
-            name: "#CHATNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatargroupinv.png"
-        }
-
-        ListElement {
-            name: "#MALEUSERNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatarmaleinv.png"
-        }
-
-        ListElement {
-            name: "#FEMALEUSERNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatarfemaleinv.png"
-        }
-
-        ListElement {
-            name: "#CHATNAME"
-            message: "Lorem ipsum dolor sit amet, consectet..."
-            avatar: "qrc:/Resources/images/icon_avatargroupinv.png"
-        }
-
+        // Тестовые данные
         ListElement {
             name: "#MALEUSERNAME"
             message: "Lorem ipsum dolor sit amet, consectet..."
@@ -95,23 +66,29 @@ MyPage {
             width: parent.width
             height: parent.height
 
-            Item {
-                id: chatList
+            Rectangle {
                 width: parent.width
                 height: parent.height
+                color: palette.darkPrimary
 
-                ListView {
-                    id: chatListView
-                    anchors.fill: parent
-                    model: chatModel
-                    clip: true
-                    delegate: chatDelegate
-                    ScrollBar.vertical: ScrollBar {
-                        active: true
-                        interactive: false
+                Item {
+                    id: chatList
+                    width: parent.width
+                    height: parent.height
+
+                    ListView {
+                        id: chatListView
+                        anchors.fill: parent
+                        model: chatModel
+                        clip: true
+                        delegate: chatDelegate
+                        ScrollBar.vertical: ScrollBar {
+                            active: true
+                            interactive: false
+                        }
+
+                        boundsBehavior: Flickable.StopAtBounds
                     }
-
-                    boundsBehavior: Flickable.StopAtBounds
                 }
             }
         }
@@ -124,53 +101,73 @@ MyPage {
         y: parent.y
         width: parent.width * 0.7
         height: parent.height
-
+/*
         Rectangle {
             id: chatPanel
+            x: parent.x
+            color: palette.primary
+            height: 50
+            width: 50
         }
 
+
+*/
 
         // Панель набора сообщения
+        //Item {
+            //anchors.bottom: parent.bottom
+            //anchors.top: parent.bottom
+            Rectangle {
+                id: writePanel
+                color: palette.darkPrimary
+                anchors.bottom: parent.bottom
+                height: 40
+                width: parent.parent.width
+                y: parent.parent.y
+
+                Button {
+                    id: attach
+                    x: 0
+                    y: 0
+                    text: "Attach"
+                    onClicked: { // Пока тестовая функция с сигналом
+                        receiver.chatSlot();
+                    }
+                }
+
+                TextField {
+                    id: messageField
+                    anchors.fill: parent
+                    visible: true
+                    wrapMode: "Wrap"
+                    placeholderText: "Write your message..."
+                    anchors.rightMargin: 100
+                    anchors.leftMargin: 99
+                }
+
+                Button {
+                    id: send
+                    x: 740
+                    y: 0
+                    text: "Send"
+                    onClicked: {
+                        dropInfo({sender: "sender", message: "lorem ipsum"})
+                        //console.log("Emit")
+                    }
+                }
+            }
+       // }
+
+
+/*
         Rectangle {
-            id: messagePanel
-            color: palette.darkPrimary
-            anchors.bottom: parent.bottom
-            height: 40
-            width: parent.width
-            y: parent.y
-
-            // TODO: Исправить относительные позиции элементов
-            Button {
-                id: attach
-                x: 0
-                y: 0
-                text: "Attach"
-                //x: parent.x
-            }
-
-            TextArea {
-                id: messageField
-                anchors.fill: parent
-                visible: true
-                wrapMode: TextArea.Wrap
-                placeholderText: "Write your message..."
-                color: messageField.focus == true ? palette.darkText : palette.text
-                anchors.rightMargin: 99
-                anchors.leftMargin: 100
-                //width: parent.width * 0.7
-                //x: attach.x + attach.width
-            }
-
-            Button {
-                id: send
-                x: 740
-                y: 0
-                text: "Send"
-                //x: messageField.x + messageField.width
-            }
-
-        // TODO: Заполнить
-        }
+            id: chatPanel
+            height: 50
+            width: 50
+            color: palette.primary
+            //x: parent.x
+            //y: parent.y
+        }*/
     }
 
     // Делегат для отображения данных на списке чатов
@@ -250,7 +247,7 @@ MyPage {
                 // TODO: дополнить кнопки логикой
                 onEntered: {
                     if (!menuIsShown) {
-                        parent.color = palette.currentHighlightItem
+                        parent.color = palette.currentHoveredItem
                     }
                 }
 
@@ -261,7 +258,8 @@ MyPage {
                 }
 
                 onClicked: {
-                    clickAnimation
+                    parent.color = palette.currentHighlightItem
+                    showChat();
                 }
             }
 
@@ -271,6 +269,18 @@ MyPage {
 
                 // TODO: допилить анимацию при нажатии
             }
+        }
+    }
+
+    // TODO
+    // Делегат для отображения сообщения
+    Component {
+        id: messageDelegate
+
+        Rectangle {
+            id: messageItem
+            height: 50
+            color: palette.darkPrimary
         }
     }
 }
