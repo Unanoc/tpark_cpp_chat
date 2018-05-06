@@ -10,7 +10,7 @@ create table Users (
 -- Хотел бы я сделать шардирование, и ключом выбрать Chats.id, но не знаю, сколько времени это займёт.
 create table Chats (
   id       serial primary key,
-  title    text   not null unique,
+  title    text not null unique,
   -- is_public boolean,
   admin_id serial not null REFERENCES Users (id)
 );
@@ -18,8 +18,8 @@ create table Chats (
 -- Сессии пользователей. По одному ключу авторизации на устройство.
 create table Sessions (
   id          serial primary key,
-  user_id     integer                     not null references Users (id),
-  session_key text                        not null,
+  user_id     integer not null references Users (id),
+  session_key text not null,
   entry_time  timestamp without time zone not null
 );
 
@@ -43,12 +43,12 @@ create table Chat_User (
 -- Ненормализованная таблица с информацией для профиля пользователя.
 create table User_counters (
   id        serial primary key,
-  user_id   integer                     not null references Users (id),
+  user_id   integer not null references Users (id),
   last_view timestamp without time zone not null
 );
 
 -- при создании нового пользователя автоматически создаются счётчики для него
-create or replace function create_user_counter()
+create function create_user_counter()
   returns trigger as $$
 begin
   insert into User_counters (user_id, last_view) VALUES (
@@ -74,7 +74,7 @@ create table Chat_counters (
 );
 
 -- при создании нового чата автоматически создаются счётчики для него
-create or replace function create_chat_counter()
+create function create_chat_counter()
   returns trigger as $$
 begin
   insert into Chat_counters (chat_id, number_of_users) values (

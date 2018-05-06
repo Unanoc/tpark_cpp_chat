@@ -1,14 +1,35 @@
-#include <iostream>
-#include <pqxx/pqxx>
-#include <vector>
-#include "../json_converter.h"
+#include "database_interaction.hpp"
 
-// функция регистрации по паролю
+// функция регистрации пользователя
+// по username и password_hash
+// врзвращает новый id.
+int add_user(pqxx::connection &c, std::string &username, std::string &password_hash){
+    pqxx::work w(c); // Start a transaction.
+    try {
+        pqxx::row r = w.exec1(
+            "insert into Users ("
+                "username, "
+                "password_hash"
+            ") values ("
+                "'" + w.esc(username) + "', "
+                "'" + w.esc(password_hash) + "'"
+            ") returning id);"
+        );
+        w.commit();
+        return r[0].as<int>();
+    } catch (const std::exception &e) {
+        w.abort();
+        std::cerr << e.what() << std::endl;
+        return 0;
+    }
+}
+
+// функция проверки регистрации по паролю
 // получает имя пользователя и хеш пароля,
 // возвращает user_id или 0 в случае ошибки
 int get_user_id_by_login_pasword(pqxx::connection &c, std::string &username, std::string &password_hash){
+    pqxx::work w(c);
     try {
-        pqxx::work w(c); // Start a transaction.
         pqxx::result r = w.exec(
             "select id "
             "from Users "
@@ -23,17 +44,18 @@ int get_user_id_by_login_pasword(pqxx::connection &c, std::string &username, std
             return r[0][0].as<int>();
         }
     } catch (const std::exception &e) {
+        w.abort();
         std::cerr << e.what() << std::endl;
-        throw;
+        return 0;
     }
 }
 
-// функция регистрации по ключу
+// функция проверки регистрации по ключу
 // получает имя пользователя и хеш ключа,
 // возвращает user_id или 0 в случае ошибки
 int get_user_id_by_login_session_key(pqxx::connection &c, std::string &username, std::string &key_hash){
+    pqxx::work w(c);
     try {
-        pqxx::work w(c); // Start a transaction.
         pqxx::result r = w.exec(
             "select "
                 "users.id "
@@ -51,8 +73,64 @@ int get_user_id_by_login_session_key(pqxx::connection &c, std::string &username,
             return r[0][0].as<int>();
         }
     } catch (const std::exception &e) {
+        w.abort();
         std::cerr << e.what() << std::endl;
-        throw;
+        return 0;
+    }
+}
+
+// функция установки нового ключа авторизации пользователю с данным user_id
+bool set_new_autorised_key(pqxx::connection &c, int user_id, std::string &new_tocken) {
+    pqxx::work w(c);
+    try {
+        pqxx::result r = w.exec(
+            "insert into Sessions ("
+                "user_id, "
+                "session_key, "
+                "entry_time"
+            ") values ("
+                + std::to_string(user_id) +", "
+                "'" + w.esc(new_tocken) + "', "
+                "now()"
+            ");"
+        );
+        w.commit();
+        return true;
+    } catch (const std::exception &e) {
+        w.abort();
+        std::cerr << e.what() << std::endl;
+        return false;
+    }
+}
+
+// функция создания чата. Создавший становится админом.
+// в случае конфликта имён чатов(они уникальны) возвращает 0
+int add_chat(pqxx::connection &c, int admin_user_id, std::string &chat_title) {
+    pqxx::work w(c);
+    try {
+        pqxx::row r = w.exec1(
+            "with tmp as ("
+                "insert into Chats("
+                    "title, "
+                    "admin_id"
+                ") values ("
+                    "'"+ w.esc(chat_title) + "', "
+                    + std::to_string(admin_user_id) +
+                ") returning id"
+            ") insert into Chat_User("
+                "user_id, "
+                "chat_id"
+            ") values ("
+                + std::to_string(admin_user_id) + ", "
+                "(select id from tmp)"
+            ") returning chat_id;"
+        );
+        w.commit();
+        return r[0].as<int>();
+    } catch (const std::exception &e) {
+        w.abort();
+        std::cerr << e.what() << std::endl;
+        return 0;
     }
 }
 
@@ -60,8 +138,8 @@ int get_user_id_by_login_session_key(pqxx::connection &c, std::string &username,
 // получает id пользователя и название группы,
 // возвращает chat_id или 0 в случае ошибки
 int get_chat_id_by_user_id_chat_title(pqxx::connection &c, int user_id, std::string &chat_title){
+    pqxx::work w(c);
     try {
-        pqxx::work w(c); // Start a transaction.
         pqxx::result r = w.exec(
             "select "
                 "chats.id "
@@ -73,23 +151,21 @@ int get_chat_id_by_user_id_chat_title(pqxx::connection &c, int user_id, std::str
                 "chat_user.chat_id = chats.id;"
         );
         w.commit();
-        if (r.empty()){
-            return 0;
-        } else {
-            return r[0][0].as<int>();
-        }
+        return r[0][0].as<int>();
     } catch (const std::exception &e) {
+        w.abort();
         std::cerr << e.what() << std::endl;
-        throw;
+        return 0;
     }
 }
+
 
 // функция отправки сообщения по user_id и chat_id
 // получает id пользователя и id группы,
 // НЕ проверяет принадлежность к группе(это проверяется при получении chat_id)
-void get_chat_id_by_user_id_chat_title(pqxx::connection &c, int user_id, int chat_id, std::string &text){
+void set_message_by_user_id_chat_id(pqxx::connection &c, int user_id, int chat_id, std::string &text){
+    pqxx::work w(c); // Start a transaction.
     try {
-        pqxx::work w(c); // Start a transaction.
         pqxx::result r = w.exec(
             "insert into Messages ("
                 "sender_id, chat_id, send_time, text"
@@ -98,15 +174,15 @@ void get_chat_id_by_user_id_chat_title(pqxx::connection &c, int user_id, int cha
         );
         w.commit();
     } catch (const std::exception &e) {
+        w.abort();
         std::cerr << e.what() << std::endl;
-        throw;
     }
 }
 
 
-std::vector<MessageGet> get_from_chat_by_time(pqxx::connection &c, int user_id, int unix_epoch) {
+std::vector<MessageGet> get_from_chats_by_user_id_time(pqxx::connection &c, int user_id, int unix_epoch) {
+    pqxx::work w(c);
     try {
-        pqxx::work w(c); // Start a transaction.
         pqxx::result r = w.exec(
         "select "
             "Users.username as sender_username, "
@@ -135,7 +211,46 @@ std::vector<MessageGet> get_from_chat_by_time(pqxx::connection &c, int user_id, 
         }
         return result;
     } catch (const std::exception &e) {
-            std::cerr << e.what() << std::endl;
-            throw;
+        w.abort();
+        std::cerr << e.what() << std::endl;
+        return std::vector<MessageGet>();
+    }
+}
+
+// функция, которая просто разрещает имя в id без проверки пароля, в случае неудачи возвращает 0.
+int get_user_id_by_login(pqxx::connection &c, std::string &username){
+    pqxx::work w(c);
+    try {
+        pqxx::row r = w.exec1(
+            "select id from Users where username = '" + w.esc(username) + "';"
+        );
+        w.commit();
+        return r[0].as<int>();
+    } catch (const std::exception &e) {
+        w.abort();
+        std::cerr << e.what() << std::endl;
+        return 0;
+    }
+}
+
+
+// функция добавления пользователя в чат, не проверяет никаких прав.
+int add_user_to_chat(pqxx::connection &c, int user_id, int chat_id){
+    pqxx::work w(c);
+    try {
+        pqxx::row r = w.exec1(
+            "insert into Chat_User ("
+                "user_id, chat_id"
+            ") values ("
+                + std::to_string(user_id)+", "
+                + std::to_string(chat_id)+
+            ") returning id;"
+        );
+        w.commit();
+        return r[0].as<int>();
+    } catch (const std::exception &e) {
+        w.abort();
+        std::cerr << e.what() << std::endl;
+        return 0;
     }
 }

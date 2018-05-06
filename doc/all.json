@@ -1,0 +1,110 @@
+// процесс работы c пришедшим сообщением:
+// приходит структура
+// send_message
+{
+    "message": {
+        "username": "username",
+        "chat": "chatname",
+        "text": "text", 
+	"password": "qweqwe"
+    }
+}
+// в базе проверяется пользователь 
+// int user_id = get_user_id_by_login_pasword(username, password)
+// если 0 - возвращаем http code 403 forbidden
+// иначе проверяем чат
+// int chat_id = get_chat_id_by_user_id_chat_title(user_id, chat)
+// если 0 - возвращаем http code 403 forbidden
+// иначе кладём сообщение в базу 
+// set_message_by_user_id_chat_id(user_id, chat_id, text)
+// возвращаем http code 200 ок
+
+
+// процесс обработки запроса на обновление
+// приходит структура
+// get_messages
+{
+    "username": "username",
+    "password": "password",
+    "last_update": 1231323
+}
+// в базе проверяется пользователь 
+// int user_id = get_user_id_by_login_pasword(username, password)
+// если 0 - возвращаем http code 403 forbidden
+// иначе обращаемся к базе и вытаскиваем сообщения
+// get_from_chats_by_user_id_time(user_id, last_update)
+// сереализуем данные в стрктуру
+// get_messages
+{
+    "messages": [
+        {
+            "username": "username",
+            "chat": "chatname",
+            "text": "text",
+            "date": 1231232142  // (unix time)
+        },
+        ...
+    ]
+}
+// возвращаем http code 200 ок
+
+
+// процесс обработки запроса на добавление нового пользователя
+// signup
+// приходит запрос с логином / паролем
+{
+    "username": "username",
+    "password": "password"
+}
+// обращаемся к базе
+// int user_id = add_user(username, hash(password))
+// если вернули 0 - юзернейм занят
+//     возвращаем http code 406 Not Acceptable
+// иначе юзернейм свободен
+//     возвращаем http code 200 OK
+
+
+// процесс обработки запроса на создание нового чата
+// create_chat
+// приходит структура
+{
+    "username": "username",
+    "password": "password",
+    "chatname": "chatname"
+}
+// стандартно в базе проверяется пользователь 
+// int user_id = get_user_id_by_login_pasword(username, password)
+// если 0 - возвращаем http code 403 forbidden
+// иначе если пользователь корректен 
+// int chat_id = add_chat(user_id, chatname)	    
+// если вернули 0 chatname занят
+//     возвращаем http code 406 Not Acceptable    
+// иначе chatname свободен
+//     возвращаем http code 200 OK
+
+
+// процесс обработки запроса на добавление пользователя в группу
+// сделать это может только уже находящийся в группе
+// invite_to_chat
+// приходит структура
+{
+    "username": "username",
+    "password": "password",
+    "chat": "chatname", // куда добавить, первоначально забыли	    
+    "new_person": "username"
+}
+// стандартно в базе проверяется пользователь 
+// int user_id = get_user_id_by_login_pasword(username, password)
+// если 0 - возвращаем http code 403 forbidden
+// иначе пользователь корректен, проверяем чат
+// int chat_id = get_chat_id_by_user_id_chat_title(user_id, chat)
+// если 0 - возвращаем http code 403 forbidden	    
+// иначе чат и пользователь корректны,
+// проверяем добавляемого пользователя
+// int added_user_id = get_user_id_by_login(new_person)	    
+// если вернули 0 добавляемого пользователя не существует
+//     возвращаем http code 406 Not Acceptable
+// иначе всё корректно
+// добавляем наконец
+// add_user_to_chat(user_id, chat_id)
+// возвращаем http code 200 OK

@@ -22,7 +22,7 @@ public:
     std::string username;
     long int send_timestamp;
     std::string text;
-
+    std::string chat;
     MessageGet() :send_timestamp(0) {}
 };
 
