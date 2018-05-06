@@ -1,7 +1,6 @@
 #ifndef DATABASE_INTERACTION_H
 #define DATABASE_INTERACTION_H
 
-#include <iostream>
 #include <pqxx/pqxx>
 #include <vector>
 
