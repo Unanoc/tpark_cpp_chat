@@ -10,6 +10,9 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
+set(source GUI/receiver.cpp)
+set(headers GUI/receiver.h)
+
 if(WIN32)
     set(CMAKE_PREFIX_PATH "C:\\Qt\\Qt5.10.1\\5.10.1\\msvc2015\\")
 else()
@@ -21,22 +24,27 @@ find_package(Qt5Quick REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Qml REQUIRED)
 find_package(Qt5Network REQUIRED)
+find_package(Qt5Widgets REQUIRED)
 qt5_add_resources(qml_QRC GUI/qml.qrc GUI/images.qrc GUI/fonts.qrc)
-
 
 include_directories(${PROJECT_SOURCE_DIR}/HttpClient)
 add_subdirectory(HttpClient)
 
+#include_directories(${PROJECT_SOURCE_DIR}/GUI)
+#add_subdirectory(GUI)
+
 if(WIN32)
-	add_executable(${PROJECT_NAME} WIN32 main.cpp ${qml_QRC})
+    add_executable(${PROJECT_NAME} WIN32 main.cpp ${source} ${headers} ${qml_QRC})
 else()
-	add_executable(${PROJECT_NAME} main.cpp ${qml_QRC})
+    add_executable(${PROJECT_NAME} main.cpp ${qml_QRC})
 endif()
 
+#target_link_libraries(${PROJECT_NAME} GUI)
 target_link_libraries(${PROJECT_NAME} HttpClient)
 target_link_libraries(${PROJECT_NAME} Qt5::Core)
 target_link_libraries(${PROJECT_NAME} Qt5::Gui)
 target_link_libraries(${PROJECT_NAME} Qt5::Qml)
 target_link_libraries(${PROJECT_NAME} Qt5::Quick)
-target_link_libraries(${PROJECT_NAME}  Qt5::Network)
+target_link_libraries(${PROJECT_NAME} Qt5::Network)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 
