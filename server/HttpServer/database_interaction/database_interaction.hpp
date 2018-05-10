@@ -4,7 +4,7 @@
 #include <pqxx/pqxx>
 #include <vector>
 #include <iostream>
-#include "../json_converter.h"
+#include "../json_converter.hpp"
 
 // функция регистрации пользователя по паролю
 // по username и password_hash
@@ -49,7 +49,7 @@ int add_user_to_chat(pqxx::connection &c, int user_id, int chat_id);
 
 // функция получения всех новых сообщений,
 // начиная с переданного времени(Unix time - секунды с 00:00 01.01.1970).
-std::vector<MessageGet> get_from_chats_by_user_id_time(pqxx::connection &c, int user_id, int unix_epoch);
+std::vector<MessageGetStruct> get_from_chats_by_user_id_time(pqxx::connection &c, int user_id, int unix_epoch);
 
 
 #endif //DB_INTERSECTION_HPP

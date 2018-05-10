@@ -13,7 +13,7 @@ int add_user(pqxx::connection &c, std::string &username, std::string &password_h
             ") values ("
                 "'" + w.esc(username) + "', "
                 "'" + w.esc(password_hash) + "'"
-            ") returning id);"
+            ") returning id;"
         );
         w.commit();
         return r[0].as<int>();
@@ -180,7 +180,7 @@ void set_message_by_user_id_chat_id(pqxx::connection &c, int user_id, int chat_i
 }
 
 
-std::vector<MessageGet> get_from_chats_by_user_id_time(pqxx::connection &c, int user_id, int unix_epoch) {
+std::vector<MessageGetStruct> get_from_chats_by_user_id_time(pqxx::connection &c, int user_id, int unix_epoch) {
     pqxx::work w(c);
     try {
         pqxx::result r = w.exec(
@@ -199,11 +199,11 @@ std::vector<MessageGet> get_from_chats_by_user_id_time(pqxx::connection &c, int 
             ");"
         );
         w.commit();
-        std::vector <MessageGet>result;
+        std::vector <MessageGetStruct>result;
         const int num_rows = r.size();
         for (int rownum = 0; rownum < num_rows; ++rownum) {
             const pqxx::row row = r[rownum];
-            MessageGet m;
+            MessageGetStruct m;
             m.username = row[0].as<std::string>();
             m.send_timestamp = row[1].as<long int>();
             m.text = row[2].as<std::string>();
@@ -213,7 +213,7 @@ std::vector<MessageGet> get_from_chats_by_user_id_time(pqxx::connection &c, int 
     } catch (const std::exception &e) {
         w.abort();
         std::cerr << e.what() << std::endl;
-        return std::vector<MessageGet>();
+        return std::vector<MessageGetStruct>();
     }
 }
 

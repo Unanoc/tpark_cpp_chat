@@ -1,4 +1,4 @@
-SRCS=main.cpp server.cpp json_converter.cpp
+SRCS=main.cpp server.cpp json_converter.cpp database_interaction/database_interaction.cpp
 LDFLAGS=-levent
 JANSONFLAG=-ljansson
 PSTGR=-lpqxx -lpq
