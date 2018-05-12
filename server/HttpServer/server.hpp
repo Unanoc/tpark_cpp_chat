@@ -20,5 +20,7 @@ void invite_user_to_chat_handler(struct evhttp_request *request, void *arg);
 /* Sending a message*/
 void send_message_handler(struct evhttp_request *request, void *arg);
 
+/* Getting new messages */
+void get_messages_handler(struct evhttp_request *request, void *arg);
 
 #endif 

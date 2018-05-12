@@ -46,7 +46,7 @@ For macOs:
 ```sh
     cd tpark_cpp_chat/server/sql
     createdb
-    psql -U username -d myDataBase -a -f database_schema.sql   - import sql script
+    psql -U username -d username(nameOfDataBase) -a -f database_schema.sql - import sql script
 ```
 
 ### Final

@@ -82,3 +82,22 @@ MessageSendStruct JsonConverter::fromJsonToMessageSend(json_t *requestJSON) {
 	MessageSendStruct msg(json_string_value(username_json), json_string_value(chat_json), json_string_value(text_json), json_string_value(password_json));
 	return msg;
 }
+
+MessageGetReqStruct JsonConverter::fromJsonToMessageGetReqStruct(json_t *requestJSON) {
+	json_t *root= json_object_get(requestJSON, "user");
+
+	json_t *username_json = json_object_get(root, "username");
+	if(!json_is_string(username_json))
+		fprintf(stderr, "error: sender is not a string\n");
+
+	json_t *password_json = json_object_get(root, "password");
+	if(!json_is_string(password_json))
+		fprintf(stderr, "error: password is not a string\n");
+
+	json_t *last_update_json = json_object_get(root, "last_update");
+	if(!json_is_integer(last_update_json))
+		fprintf(stderr, "error: last_update is not a string\n");
+
+	MessageGetReqStruct msg(json_string_value(username_json), json_string_value(password_json), json_integer_value(last_update_json));
+	return msg;
+}

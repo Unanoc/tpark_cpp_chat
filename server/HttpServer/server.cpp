@@ -74,8 +74,6 @@ void registration_handler(struct evhttp_request *request, void *arg) {
     } else {
         snprintf(errorText, 1024, "Input error: on line %d: %s\n", error.line, error.text);
     }
-
-    return;
 }
 
 void create_chat_handler(struct evhttp_request *request, void *arg) {
@@ -120,8 +118,6 @@ void create_chat_handler(struct evhttp_request *request, void *arg) {
     } else {
         snprintf(errorText, 1024, "Input error: on line %d: %s\n", error.line, error.text);
     }
-
-    return;
 }
 
 void invite_user_to_chat_handler(struct evhttp_request *request, void *arg) {
@@ -203,7 +199,7 @@ void send_message_handler(struct evhttp_request *request, void *arg) {
         int user_id = get_user_id_by_login_pasword(c, msg.username, msg.password);
 
         if (user_id != 0) {
-            int chat_id = add_chat(c, user_id, msg.chat);
+            int chat_id = get_chat_id_by_user_id_chat_title(c, user_id, msg.chat);
             if (chat_id != 0) {
                 set_message_by_user_id_chat_id(c, user_id, chat_id, msg.text);
                 evhttp_send_reply(request, HTTP_OK, "OK", responseBuffer);
@@ -220,8 +216,50 @@ void send_message_handler(struct evhttp_request *request, void *arg) {
     } else {
         snprintf(errorText, 1024, "Input error: on line %d: %s\n", error.line, error.text);
     }
+}
 
-    return;
+void get_messages_handler(struct evhttp_request *request, void *arg) {
+    logger(request);
+
+    struct event_base *base = (struct event_base *)arg;
+    struct evbuffer *requestBuffer = evhttp_request_get_input_buffer(request); 
+    size_t requestLen = evbuffer_get_length(requestBuffer);
+    char *requestDataString = (char *)malloc(sizeof(char) * requestLen);
+    memset(requestDataString, 0, requestLen);
+    evbuffer_copyout(requestBuffer, requestDataString, requestLen); //evbuffer_copyout automaticly frees requestBuffer
+    char errorText[1024];
+    json_error_t error;
+    json_t *requestJSON = json_loadb(requestDataString, requestLen, 0, &error);
+
+    struct evbuffer *responseBuffer = evbuffer_new();
+
+    if (requestJSON != NULL) {
+        requestDataString = json_dumps(requestJSON, JSON_INDENT(4));
+        printf("%s\n", requestDataString);
+
+        JsonConverter jsonConv;
+        MessageGetReqStruct user = jsonConv.fromJsonToMessageGetReqStruct(requestJSON);
+
+        pqxx::connection c;
+        int user_id = get_user_id_by_login_pasword(c, user.username, user.password);
+
+        if (user_id != 0) {
+            std::vector<MessageGetStruct> messages = get_from_chats_by_user_id_time(c, user_id, user.last_update);
+            for (int i = 0; i < messages.size(); i++) {
+                std::cout << messages[i].username << " " << messages[i].text << std::endl;
+                // TODO
+            }
+            evhttp_send_reply(request, HTTP_OK, "OK", responseBuffer);
+        } else {
+            evhttp_send_reply(request, HTTP_FORBIDDEN, "FORBIDDEN", responseBuffer);
+        }
+        
+        evbuffer_free(responseBuffer);
+        free(requestDataString);
+        json_decref(requestJSON);
+    } else {
+        snprintf(errorText, 1024, "Input error: on line %d: %s\n", error.line, error.text);
+    }
 }
 
 

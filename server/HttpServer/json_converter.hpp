@@ -41,6 +41,16 @@ public:
 	MessageSendStruct(std::string username, std::string chatName, std::string msgText, std::string password) : username(username), chat(chatName), text(msgText), password(password) {}
 };
 
+// request
+class MessageGetReqStruct {
+public:
+    std::string username;
+    std::string password;
+    long int last_update;
+    MessageGetReqStruct(std::string username, std::string password, long int last_update) : username(username), password(password), last_update(last_update) {}
+};
+
+// response
 class MessageGetStruct {
 public:
     std::string username;
@@ -51,17 +61,13 @@ public:
 };
 
 
-
 class JsonConverter {
 public:
 	MessageSendStruct fromJsonToMessageSend(json_t *requestJSON);
 	UserRegisterStruct fromJsonToUserRegister(json_t *requestJSON);
 	ChatCreateStruct fromJsonToChatCreate(json_t *requestJSON);
 	InviteToChatStruct fromJsonToInviteChat(json_t *requestJSON);
+	MessageGetReqStruct fromJsonToMessageGetReqStruct(json_t *requestJSON);
 };
-
-
-
-
 
 #endif
