@@ -23,6 +23,15 @@ public:
 	ChatCreateStruct(std::string username, std::string password, std::string chat) : username(username), password(password), chat(chat) {}
 };
 
+class InviteToChatStruct {
+public:
+	std::string username;
+	std::string password;
+	std::string chat;
+	std::string new_person;
+	InviteToChatStruct(std::string username, std::string password, std::string chat, std::string new_person) : username(username), password(password), chat(chat), new_person(new_person) {}
+};
+
 class MessageSendStruct {
 public:
 	std::string username;
@@ -48,6 +57,7 @@ public:
 	MessageSendStruct fromJsonToMessageSend(json_t *requestJSON);
 	UserRegisterStruct fromJsonToUserRegister(json_t *requestJSON);
 	ChatCreateStruct fromJsonToChatCreate(json_t *requestJSON);
+	InviteToChatStruct fromJsonToInviteChat(json_t *requestJSON);
 };
 
 

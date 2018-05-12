@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
     evhttp_set_cb(http_server, "/send_message", send_message_handler, NULL);
     evhttp_set_cb(http_server, "/registration", registration_handler, NULL);
     evhttp_set_cb(http_server, "/create_chat", create_chat_handler, NULL);
+    evhttp_set_cb(http_server, "/invite_user_to_chat", invite_user_to_chat_handler, NULL);
     evhttp_set_gencb(http_server, generic_handler, NULL);
 
     fprintf(stderr, "Server started on %s port %d\n", http_addr, http_port);
