@@ -22,7 +22,6 @@ The Jansson source is available at http://www.digip.org/jansson/releases/.
 - **make check**
 - **make install**
 
-
 ### Library "libevent"
 
 For macOs:
@@ -31,9 +30,23 @@ For macOs:
 For Ubuntu:
 - **sudo apt-get install libevent-dev**
 
-
 ### Library "libpqxx"
 For macOs:
 - **brew install libpqxx**
 - **brew install postgresql**
 - **brew install libpq**
+
+### Setting a database
+- **cd tpark_cpp_chat/server/sql**
+- **createdb**
+- **psql -U username -d myDataBase -a -f database_schema.sql   - import sql script**
+
+### Final
+- **cd tpark_cpp_chat/server/HttpServer**
+- **make all**
+- **./http_server**
+
+### Clean
+- **make clean**
+
+
