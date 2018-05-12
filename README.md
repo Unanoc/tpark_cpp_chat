@@ -3,8 +3,9 @@ The first semester of Technopark@MailRu. CPP course. Semester project.
 
 A simple chat with telegram Desktop GUI.
 
-[Client](https://github.com/Unanoc/tpark_cpp_chat/tree/master/client)
-[Server](https://github.com/Unanoc/tpark_cpp_chat/tree/master/server/HttpServer)
+[CLIENT](https://github.com/Unanoc/tpark_cpp_chat/tree/master/client) 
+ 
+[SERVER](https://github.com/Unanoc/tpark_cpp_chat/tree/master/server)
 
 ## Team [go_to_semestr2]
 
