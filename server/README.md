@@ -1,6 +1,5 @@
 # Server
 
-
 The structure of the server part consists of:
 
 - **Working with network (HttpServer)**;
@@ -15,38 +14,49 @@ We use library "libevent" for working with HTTP, "jansson" for working with JSON
 ### Library "jannson"
 
 The Jansson source is available at http://www.digip.org/jansson/releases/.
-- **bunzip2 -c jansson-1.1.11.tar.bz2 | tar xf -**
-- **cd jansson-1.1.11**
-- **./configure**
-- **make**
-- **make check**
-- **make install**
-
+```sh
+    bunzip2 -c jansson-1.1.11.tar.bz2 | tar xf
+    cd jansson-1.1.11
+    ./configure
+    make
+    make check
+    make install
+```
 ### Library "libevent"
 
 For macOs:
-- **brew install libevent**
+```sh
+    brew install libevent
+```
 
 For Ubuntu:
-- **sudo apt-get install libevent-dev**
+```sh
+    sudo apt-get install libevent-dev
+```
 
 ### Library "libpqxx"
 For macOs:
-- **brew install libpqxx**
-- **brew install postgresql**
-- **brew install libpq**
+```sh
+    brew install libpqxx
+    brew install postgresql
+    brew install libpq
+```
 
 ### Setting a database
-- **cd tpark_cpp_chat/server/sql**
-- **createdb**
-- **psql -U username -d myDataBase -a -f database_schema.sql   - import sql script**
+```sh
+    cd tpark_cpp_chat/server/sql
+    createdb
+    psql -U username -d myDataBase -a -f database_schema.sql   - import sql script
+```
 
 ### Final
-- **cd tpark_cpp_chat/server/HttpServer**
-- **make all**
-- **./http_server**
+```sh
+    cd tpark_cpp_chat/server/HttpServer
+    make all
+    ./http_server
+```
 
 ### Clean
-- **make clean**
-
-
+```sh
+    make clean
+```
