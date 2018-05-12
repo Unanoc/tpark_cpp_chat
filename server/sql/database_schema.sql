@@ -40,6 +40,10 @@ create table Chat_User (
   chat_id integer not null references Chats (id)
 );
 
+-- Индекс, что бы нельзя было вступить в группу более 1 раза.
+create unique index concurrently if not exists
+only_one_link on Chat_User using btree (user_id, chat_id);
+
 -- Ненормализованная таблица с информацией для профиля пользователя.
 create table User_counters (
   id        serial primary key,
