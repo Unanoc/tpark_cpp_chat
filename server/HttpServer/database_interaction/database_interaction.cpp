@@ -185,15 +185,17 @@ std::vector<MessageGetStruct> get_from_chats_by_user_id_time(pqxx::connection &c
     try {
         pqxx::result r = w.exec(
         "select "
-            "Users.username as sender_username, "
-            "cast(extract(epoch from Messages.send_time) as integer) as send_time, "
-            "Messages.text as message_text "
+            "Users.username as username, "
+            "Chats.title as chat, "
+            "Messages.text as message_text, "
+            "cast(extract(epoch from Messages.send_time) as integer) as send_time "
         "from "
             "Messages, Users, Chats, Chat_User "
         "where "
             "Chat_User.user_id = " + std::to_string(user_id) + " and "
+            "Chat_User.chat_id = Chats.id and "
             "Chat_User.chat_id = Messages.chat_id and "
-            "Users.id = user_id and "
+            "Users.id = Messages.sender_id and "
             "Messages.send_time > ("
                 "select timestamp 'epoch' + " + std::to_string(unix_epoch) + " * INTERVAL '1 second'"
             ");"
@@ -203,10 +205,12 @@ std::vector<MessageGetStruct> get_from_chats_by_user_id_time(pqxx::connection &c
         const int num_rows = r.size();
         for (int rownum = 0; rownum < num_rows; ++rownum) {
             const pqxx::row row = r[rownum];
-            MessageGetStruct m;
-            m.username = row[0].as<std::string>();
-            m.send_timestamp = row[1].as<long int>();
-            m.text = row[2].as<std::string>();
+            MessageGetStruct m(
+                row[0].as<std::string>(), // username,
+                row[1].as<std::string>(), // chat,
+                row[2].as<std::string>(), // text,
+                row[3].as<long int>()     // send_timestamp
+            );
             result.push_back(m);
         }
         return result;

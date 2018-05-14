@@ -55,7 +55,11 @@ public:
     std::string chat;
     std::string text;
     long int send_timestamp;
-    MessageGetStruct() :send_timestamp(0) {}
+    MessageGetStruct(std::string username, std::string chat, std::string text, long int send_timestamp) :
+		username(username),
+		chat(chat),
+		text(text),
+		send_timestamp(send_timestamp) {}
 };
 
 class JsonConverter {
@@ -67,4 +71,4 @@ public:
 	MessageGetReqStruct fromJsonToMessageGetReqStruct(json_t *requestJSON);
 };
 
-#endif
+#endif // JSON_CONVERTER
