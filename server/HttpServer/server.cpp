@@ -246,8 +246,7 @@ void get_messages_handler(struct evhttp_request *request, void *arg) {
         if (user_id != 0) {
             std::vector<MessageGetStruct> messages = get_from_chats_by_user_id_time(c, user_id, user.last_update);
             for (int i = 0; i < messages.size(); i++) {
-                std::cout << messages[i].username << " " << messages[i].text << std::endl;
-                // TODO
+                // creating a json
             }
             evhttp_send_reply(request, HTTP_OK, "OK", responseBuffer);
         } else {

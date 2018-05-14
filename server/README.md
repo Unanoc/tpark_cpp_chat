@@ -59,4 +59,5 @@ For macOs:
 ### Clean
 ```sh
     make clean
+    psql -U username -h localhost -d postgres -c "DROP DATABASE username";
 ```
