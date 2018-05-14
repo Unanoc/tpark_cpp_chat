@@ -232,6 +232,8 @@ void get_messages_handler(struct evhttp_request *request, void *arg) {
     json_t *requestJSON = json_loadb(requestDataString, requestLen, 0, &error);
 
     struct evbuffer *responseBuffer = evbuffer_new();
+    char *messagesForUser = NULL;
+    int responseLen = 0;
 
     if (requestJSON != NULL) {
         requestDataString = json_dumps(requestJSON, JSON_INDENT(4));
@@ -243,11 +245,32 @@ void get_messages_handler(struct evhttp_request *request, void *arg) {
         pqxx::connection c;
         int user_id = get_user_id_by_login_pasword(c, user.username, user.password);
 
+
+
+        json_t *root = json_object();
+        json_t *result_json_arr = json_array();
+        json_object_set_new(root, "messages", result_json_arr);
+
         if (user_id != 0) {
             std::vector<MessageGetStruct> messages = get_from_chats_by_user_id_time(c, user_id, user.last_update);
+
+            std::cout << messages.size() << std::endl;
             for (int i = 0; i < messages.size(); i++) {
-                // creating a json
+                json_t *msg = json_object();
+                json_object_set(result_json_arr, "message", msg);
+
+                json_object_set( msg, "username", json_string(messages[i].username.c_str()));
+                json_object_set( msg, "chat", json_string(messages[i].chat.c_str()));
+                json_object_set( msg, "text", json_string(messages[i].text.c_str()));
+                json_object_set( msg, "send_timestamp", json_integer(messages[i].send_timestamp));
+
+                json_array_append(result_json_arr,msg);
+                json_decref(msg);
             }
+
+            messagesForUser = json_dumps(root, JSON_INDENT(3));
+            responseLen = strlen(messagesForUser);
+            evbuffer_add(responseBuffer, messagesForUser, responseLen);
             evhttp_send_reply(request, HTTP_OK, "OK", responseBuffer);
         } else {
             evhttp_send_reply(request, HTTP_FORBIDDEN, "FORBIDDEN", responseBuffer);

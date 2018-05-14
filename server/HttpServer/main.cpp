@@ -25,7 +25,6 @@ int main(int argc, char **argv) {
             http_port = atol(argv[2]);
         }
     }
-
     /* Don't exit on broken pipe (just fail with message). It's just recomended... */
     signal(SIGPIPE, brokenPipe);
 

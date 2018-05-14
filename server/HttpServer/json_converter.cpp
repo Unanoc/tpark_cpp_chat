@@ -96,7 +96,7 @@ MessageGetReqStruct JsonConverter::fromJsonToMessageGetReqStruct(json_t *request
 
 	json_t *last_update_json = json_object_get(root, "last_update");
 	if(!json_is_integer(last_update_json))
-		fprintf(stderr, "error: last_update is not a string\n");
+		fprintf(stderr, "error: last_update is not a integer\n");
 
 	MessageGetReqStruct msg(json_string_value(username_json), json_string_value(password_json), json_integer_value(last_update_json));
 	return msg;

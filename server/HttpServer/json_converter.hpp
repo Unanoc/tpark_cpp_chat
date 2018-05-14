@@ -40,7 +40,6 @@ public:
 	std::string password;
 	MessageSendStruct(std::string username, std::string chatName, std::string msgText, std::string password) : username(username), chat(chatName), text(msgText), password(password) {}
 };
-
 // request
 class MessageGetReqStruct {
 public:
@@ -49,17 +48,15 @@ public:
     long int last_update;
     MessageGetReqStruct(std::string username, std::string password, long int last_update) : username(username), password(password), last_update(last_update) {}
 };
-
 // response
 class MessageGetStruct {
 public:
     std::string username;
-    long int send_timestamp;
-    std::string text;
     std::string chat;
+    std::string text;
+    long int send_timestamp;
     MessageGetStruct() :send_timestamp(0) {}
 };
-
 
 class JsonConverter {
 public:
