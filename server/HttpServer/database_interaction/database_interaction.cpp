@@ -193,7 +193,7 @@ std::vector<MessageGetStruct> get_from_chats_by_user_id_time(pqxx::connection &c
         "where "
             "Chat_User.user_id = " + std::to_string(user_id) + " and "
             "Chat_User.chat_id = Messages.chat_id and "
-            "Users.id = user_id and "
+            "Users.id = Messages.sender_id and "
             "Messages.send_time > ("
                 "select timestamp 'epoch' + " + std::to_string(unix_epoch) + " * INTERVAL '1 second'"
             ");"
