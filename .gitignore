@@ -1,1 +1,5 @@
 .idea
+.DS_Store
+.vscode
+curl_testing.txt
+http_server
