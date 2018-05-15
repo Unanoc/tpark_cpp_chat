@@ -245,8 +245,6 @@ void get_messages_handler(struct evhttp_request *request, void *arg) {
         pqxx::connection c;
         int user_id = get_user_id_by_login_pasword(c, user.username, user.password);
 
-
-
         json_t *root = json_object();
         json_t *result_json_arr = json_array();
         json_object_set_new(root, "messages", result_json_arr);
@@ -254,7 +252,6 @@ void get_messages_handler(struct evhttp_request *request, void *arg) {
         if (user_id != 0) {
             std::vector<MessageGetStruct> messages = get_from_chats_by_user_id_time(c, user_id, user.last_update);
 
-            std::cout << messages.size() << std::endl;
             for (int i = 0; i < messages.size(); i++) {
                 json_t *msg = json_object();
                 json_object_set(result_json_arr, "message", msg);
@@ -278,47 +275,10 @@ void get_messages_handler(struct evhttp_request *request, void *arg) {
         
         evbuffer_free(responseBuffer);
         free(requestDataString);
+        json_decref(result_json_arr);
+        json_decref(root);
         json_decref(requestJSON);
     } else {
         snprintf(errorText, 1024, "Input error: on line %d: %s\n", error.line, error.text);
     }
 }
-
-
-// void send_message_response(struct evhttp_request *request, json_t *requestJSON, struct event_base *base) {
-//    // Reponse
-//    json_t *responseJSON = requestJSON;
-//    json_t *message;
-
-//    char responseHeader[1024];
-
-//    char *responseData;
-//    int responseLen;
-//    struct evbuffer *responseBuffer;
-
-//    // Create JSON response data
-//    // responseJSON = json_object();
-
-//    message = json_string("date");
-//    json_object_set_new(responseJSON, "18.04.18", message);
-
-//    // dump JSON to buffer and store response length as string
-//    responseData = json_dumps(responseJSON, JSON_INDENT(3));
-//    responseLen = strlen(responseData);
-//    snprintf(responseHeader, HEADER_BUFFER_SIZE, "%d", (int)responseLen);
-//    // json_decref(responseJSON);
-
-//    // create a response buffer to send reply
-//    responseBuffer = evbuffer_new();
-
-//    // add appropriate headers
-//    evhttp_add_header(request->output_headers, "Content-Type", "application/json");
-//    evhttp_add_header(request->output_headers, "Content-Length", responseHeader);
-
-//    evbuffer_add(responseBuffer, responseData, responseLen);
-
-//    // send the reply
-//    evhttp_send_reply(request, 200, "OK", responseBuffer); 
-
-//    evbuffer_free(responseBuffer);
-// }
